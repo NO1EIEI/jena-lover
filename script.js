@@ -960,9 +960,12 @@ function downloadFinalImage(button = null) {
       line = chunk;
     });
     if (line) lines.push(line.trim());
+    exportCtx.save();
+    exportCtx.textAlign = "center";
     lines.slice(0, maxLines).forEach((textLine, index) => {
       exportCtx.fillText(textLine, x, y + index * lineHeight);
     });
+    exportCtx.restore();
     return y + Math.min(lines.length, maxLines) * lineHeight;
   };
 
@@ -1126,27 +1129,27 @@ function downloadFinalImage(button = null) {
   });
 
   exportCtx.fillStyle = "rgba(108, 45, 79, 0.38)";
-  exportCtx.fillRect(162, 332, 1288, 1540);
+  exportCtx.fillRect(192, 332, 1288, 1540);
   exportCtx.fillStyle = "#6c2d4f";
-  exportCtx.fillRect(126, 294, 1288, 1540);
+  exportCtx.fillRect(156, 294, 1288, 1540);
   exportCtx.fillStyle = "#fff8df";
-  exportCtx.fillRect(160, 328, 1220, 1470);
+  exportCtx.fillRect(190, 328, 1220, 1470);
   exportCtx.fillStyle = "#ffd997";
-  exportCtx.fillRect(194, 362, 1152, 60);
+  exportCtx.fillRect(224, 362, 1152, 60);
   exportCtx.fillStyle = "#ffe6b8";
-  exportCtx.fillRect(194, 462, 1152, 1160);
+  exportCtx.fillRect(224, 462, 1152, 1160);
   exportCtx.fillStyle = "rgba(221, 135, 91, 0.12)";
-  exportCtx.fillRect(194, 1425, 1152, 197);
+  exportCtx.fillRect(224, 1425, 1152, 197);
   exportCtx.strokeStyle = "#6c2d4f";
   exportCtx.lineWidth = 18;
-  exportCtx.strokeRect(160, 328, 1220, 1470);
+  exportCtx.strokeRect(190, 328, 1220, 1470);
   exportCtx.strokeStyle = "#ffd997";
   exportCtx.lineWidth = 10;
-  exportCtx.strokeRect(194, 362, 1152, 1400);
+  exportCtx.strokeRect(224, 362, 1152, 1400);
 
   exportCtx.fillStyle = "#ff8cc1";
   [0, 1, 2, 3].forEach((i) => {
-    exportCtx.fillRect(232 + i * 260, 384, 178, 28);
+    exportCtx.fillRect(262 + i * 260, 384, 178, 28);
   });
 
   const sticker = exportStickerImage.complete && exportStickerImage.naturalWidth > 0
@@ -1155,7 +1158,7 @@ function downloadFinalImage(button = null) {
   if (sticker) {
     exportCtx.save();
     exportCtx.imageSmoothingEnabled = true;
-    exportCtx.translate(306, 278);
+    exportCtx.translate(336, 278);
     exportCtx.rotate(-0.12);
     exportCtx.drawImage(sticker, -170, -184, 340, 520);
     exportCtx.restore();
@@ -1317,8 +1320,8 @@ function resizeCanvas() {
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   canvas.width = Math.round(window.innerWidth * dpr);
   canvas.height = Math.round(window.innerHeight * dpr);
-  canvas.style.width = `${window.innerWidth}px`;
-  canvas.style.height = `${window.innerHeight}px`;
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   seedParticles();
   seedTwinkleStars();
