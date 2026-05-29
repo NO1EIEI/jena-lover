@@ -4123,7 +4123,9 @@ proposalConfirm.addEventListener("click", (event) => {
   if (event.target === proposalConfirm) hideProposalConfirm();
 });
 
-finalShareBtn.addEventListener("click", () => shareProposalLink(finalShareBtn));
+if (finalShareBtn) {
+  finalShareBtn.addEventListener("click", () => shareProposalLink(finalShareBtn));
+}
 finalDownloadBtn.addEventListener("click", () => downloadFinalImage(finalDownloadBtn));
 
 openMemoryMail.addEventListener("click", () => openFinalPhoto(0));
