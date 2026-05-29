@@ -1,0 +1,25 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Node / Dependencies
+node_modules/
+
+# Local development / temporary files
+.gemini/
+dist/
+tmp/

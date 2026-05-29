@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposal Animation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Itim&family=Chakra+Petch:wght@400;500;600;700&family=K2D:wght@400;500;600;700;800&family=Mali:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=cleanup-1" />
+</head>
+
+<body data-scene="landing">
+  <canvas id="webgl-scene" aria-hidden="true"></canvas>
+  <canvas id="motion-canvas" aria-hidden="true"></canvas>
+  <div class="paint-texture" aria-hidden="true"></div>
+  <div id="flash" class="flash" aria-hidden="true"></div>
+
+
+
+  <div id="name-popup" class="name-popup-overlay" aria-hidden="true">
+    <div class="name-popup-window">
+      <div class="name-popup-header">
+        <span class="name-popup-icon">-</span>
+        <span class="name-popup-icon">□</span>
+        <span class="name-popup-icon">x</span>
+      </div>
+      <div class="name-popup-content">
+        <h2 class="name-popup-title">ชื่อคนที่ผมชอบ?</h2>
+        <input type="text" id="name-input" class="name-input" placeholder="ใส่ชื่อเธอตรงนี้..." autocomplete="off">
+        <p id="name-error" class="name-error"></p>
+        <div class="name-popup-actions">
+          <button id="name-confirm-btn" class="name-btn name-btn-confirm" type="button">✔️</button>
+          <button id="name-cancel-btn" class="name-btn name-btn-cancel" type="button">✖️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="app">
+    <section id="landing" class="scene landing scene-active" aria-label="Landing">
+      <div class="landing-scroll">
+        <div class="landing-stage">
+          <div class="depth-sky" aria-hidden="true">
+            <span class="forest-layer forest-back"></span>
+            <span class="forest-layer forest-front"></span>
+            <span class="grass-layer"></span>
+          </div>
+
+          <button class="brush-title landing-trigger" type="button">
+            ถึงเธอที่ผมชอบ...
+          </button>
+          <p class="landing-note">เลื่อนลงช้า ๆ แล้วแตะข้อความเพื่อเริ่ม</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz" class="scene quiz" aria-label="Quiz">
+      <div class="scene-inner quiz-layout">
+        <div class="season-card">
+          <p id="quiz-count" class="scene-kicker">คำถามที่ 1 / 6</p>
+          <h1 id="quiz-question">ถ้าวันหนึ่งเราเดินอยู่ใต้ฟ้าสีใหม่ เธออยากให้มันเป็นฤดูไหน?</h1>
+          <div id="quiz-options" class="answer-grid" role="list"></div>
+          <div class="nav-btn-container"
+            style="display: flex; gap: 24px; justify-content: center; width: 100%; margin-top: 10px;">
+            <button id="quiz-back" class="nav-btn" type="button" style="display: none;">◀</button>
+            <button id="quiz-next" class="nav-btn" type="button" disabled>▶</button>
+          </div>
+        </div>
+        <div class="season-visual" aria-hidden="true">
+          <div class="floating-island"></div>
+          <div class="light-ring"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" class="scene result" aria-label="Result">
+      <div class="scene-inner result-layout">
+        <div class="result-card">
+          <h1 id="result-title" class="result-title">ผลสรุปความผูกพัน</h1>
+          <div class="result-bar-container">
+            <div class="result-bar-bg">
+              <div id="result-bar-fill" class="result-bar-fill"></div>
+            </div>
+            <p id="result-percent" class="result-percent">0%</p>
+          </div>
+          <p id="result-level" class="result-level"></p>
+          <p id="result-date-msg" class="result-date-msg"></p>
+          <button id="result-next" class="nav-btn" type="button">▶</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="story" class="scene story" aria-label="Our Story">
+      <div class="scene-inner story-layout-centered">
+        <div class="pixel-scroll">
+          <div class="scroll-top"></div>
+          <div class="scroll-body">
+            <p id="story-count" class="scene-kicker">ฉากที่ 1 / 4</p>
+            <h1 id="story-title" class="story-title">วันที่ฟ้าเริ่มเปลี่ยนสี</h1>
+            <p id="story-text" class="story-text">บางช่วงเวลาธรรมดา กลับสว่างขึ้นเหมือนมีแสงวาดทับอยู่บนโลกทั้งใบ</p>
+            <div class="story-nav-container"
+              style="display: flex; justify-content: center; width: 100%; margin-top: 24px;">
+              <button id="story-next" class="primary-btn" type="button">ต่อไป</button>
+            </div>
+          </div>
+          <div class="scroll-bottom"></div>
+          <p id="scroll-hint" class="scroll-hint" style="display: none;">แตะม้วนกระดาษเพื่อเปิดอ่าน ♡</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="scene gallery" aria-label="Memories Gallery">
+      <div class="scene-inner gallery-layout">
+        <div class="gallery-paper-container">
+          <div class="gallery-paper-shadow">
+            <div class="paper-top"></div>
+            <div class="paper-body"></div>
+            <div class="paper-bottom"></div>
+          </div>
+          <div class="gallery-paper">
+            <div class="paper-top"></div>
+            <div class="paper-body">
+              <p class="scene-kicker">Memories Gallery</p>
+              <h1 style="text-shadow: none !important;">ความทรงจำของสองเรา</h1>
+              <p>แตะกรอบรูป แล้วปล่อยให้ดาวเล็ก ๆ ลอยออกมา</p>
+              <button id="gallery-next" class="primary-btn" type="button">ไปหน้าสุดท้าย</button>
+            </div>
+            <div class="paper-bottom"></div>
+          </div>
+        </div>
+
+        <div class="memory-space" aria-label="Photo frames">
+          <!-- Main Frame (Me) -->
+          <button class="memory-frame frame-main frame-me" type="button" data-burst="me">
+            <span class="frame-label">น้องอุ้มอิ้ม</span>
+            <span class="photo-placeholder">🔒 แตะเพื่อชมรูปภาพ</span>
+            <img class="memory-photo" data-src="assets/oummm.jpg" alt="รูปของผม" />
+          </button>
+
+          <!-- Main Frame (You) -->
+          <button class="memory-frame frame-main frame-you" type="button" data-burst="you">
+            <span class="frame-label">เจน่า</span>
+            <span class="photo-placeholder">🔒 แตะเพื่อชมรูปภาพ</span>
+            <img class="memory-photo" data-src="assets/jenaa.png" alt="รูปของอีกฝ่าย" />
+          </button>
+
+          <!-- Sub Frame 1 -->
+          <button class="memory-frame frame-sub frame-sub-1" type="button" data-burst="sub1">
+            <span class="frame-label">ความทรงจำ ♡</span>
+            <span class="photo-placeholder">🔒 แตะเพื่อชมรูปภาพ</span>
+            <img class="memory-photo" data-src="assets/4uuuu.png" alt="ความทรงจำ 1" />
+          </button>
+
+          <!-- Sub Frame 2 -->
+          <button class="memory-frame frame-sub frame-sub-2" type="button" data-burst="sub2">
+            <span class="frame-label">ความรัก ✦</span>
+            <span class="photo-placeholder">🔒 แตะเพื่อชมรูปภาพ</span>
+            <img class="memory-photo" data-src="assets/4444u.png" alt="ความทรงจำ 2" />
+          </button>
+
+          <!-- Sub Frame 3 -->
+          <button class="memory-frame frame-sub frame-sub-3" type="button" data-burst="sub3">
+            <span class="frame-label">สองเรา ✿</span>
+            <span class="photo-placeholder">🔒 แตะเพื่อชมรูปภาพ</span>
+            <img class="memory-photo" data-src="assets/chosseu.png" alt="ความทรงจำ 3" />
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="gift" class="scene gift" aria-label="A Gift for You">
+      <div class="scene-inner gift-layout">
+        <div id="gift-container" class="gift-container">
+          <canvas id="gift-canvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="proposal" class="scene proposal" aria-label="The Proposal">
+      <div class="proposal-pixel-bg" aria-hidden="true">
+        <span class="pixel-horizon horizon-back"></span>
+        <span class="pixel-horizon horizon-mid"></span>
+        <span class="pixel-horizon horizon-front"></span>
+        <span class="proposal-star star-a"></span>
+        <span class="proposal-star star-b star-small"></span>
+        <span class="proposal-star star-c"></span>
+        <span class="proposal-star star-d star-small"></span>
+        <span class="proposal-star star-e star-big"></span>
+        <span class="proposal-star star-f"></span>
+        <span class="proposal-star star-g star-small"></span>
+        <span class="proposal-star star-h star-big"></span>
+        <span class="proposal-star star-i"></span>
+      </div>
+      <div class="scene-inner proposal-layout proposal-book-layout">
+        <div class="pixel-love-drops" aria-hidden="true">
+          <span>LOVE</span>
+          <span>♡</span>
+          <span>✦</span>
+          <span>✉</span>
+          <span>♥</span>
+          <span>be mine</span>
+          <span>♡</span>
+          <span>✦</span>
+        </div>
+
+        <div class="pixel-book" aria-label="Pixel proposal book">
+          <div class="pixel-book-cover" aria-hidden="true">
+            <span class="book-cover-spine"></span>
+            <span class="book-cover-heart"></span>
+          </div>
+
+          <div class="pixel-book-pages">
+            <div class="book-page book-page-left" aria-hidden="true">
+              <span class="book-tab tab-red"></span>
+              <span class="book-tab tab-blue"></span>
+              <span class="book-tab tab-green"></span>
+              <span class="pixel-sticker sticker-love">LOVE</span>
+              <span class="pixel-sticker sticker-heart">♥</span>
+              <span class="pixel-sticker sticker-mail">✉</span>
+              <span class="pixel-sticker sticker-flower">✿</span>
+              <span class="pixel-sticker sticker-spark spark-one">✦</span>
+              <span class="pixel-sticker sticker-spark spark-two">✦</span>
+            </div>
+
+            <div class="book-gutter" aria-hidden="true"></div>
+
+            <div class="book-page book-page-right">
+              <div class="proposal-copy">
+                <p class="scene-kicker">The brightest question</p>
+                <h1 id="proposal-title">เป็นแฟนกันมั้ยย</h1>
+                <p id="proposal-note">เปิดสมุดหน้านี้แล้ว มีคำถามเดียวที่อยากเก็บไว้กับเธอ</p>
+              </div>
+
+              <div class="proposal-actions">
+                <button id="accept-btn" class="accept-btn" type="button">เป็น</button>
+                <button id="maybe-btn" class="maybe-btn" type="button">ไม่เป็น</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="final" class="scene final-scene" aria-label="Final">
+      <div class="final-pixel-sky" aria-hidden="true">
+        <span class="pixel-heart-bg heart-one"></span>
+        <span class="pixel-heart-bg heart-two"></span>
+        <span class="pixel-heart-bg heart-three"></span>
+        <span class="pixel-heart-bg heart-four"></span>
+        <span class="pixel-heart-bg heart-five"></span>
+        <span class="pixel-heart-bg heart-six"></span>
+        <span class="pixel-heart-bg heart-seven"></span>
+        <span class="pixel-heart-bg heart-eight"></span>
+        <span class="cute-float float-milk">OUM</span>
+        <span class="cute-float float-game">น้องอุ้มอิ้ม</span>
+        <span class="cute-float float-cassette">JENA</span>
+        <span class="cute-float float-phone">เจน่า</span>
+        <span class="cute-float float-spark">✦</span>
+        <span class="cute-float float-candy">♡</span>
+      </div>
+
+      <div class="scene-inner final-layout">
+        <article class="final-popup">
+          <img class="final-flower-sticker sticker-oum-left" src="assets/oumflower1.png?v=cleanup-1" alt="" aria-hidden="true" />
+          <p class="scene-kicker">Final Page</p>
+          <h1>เราเป็นแฟนกันแล้วนะ</h1>
+          <p id="final-date" class="final-date">บันทึกช่วงเวลานี้ไว้ในสมุดหัวใจ</p>
+          <p>ขอบคุณที่เจน่ามาเป็นส่วนหนึ่งของกันและกันนะ คุณแฟนคนแรกของเค้า
+            เขาสัญญาจะดูแลเจน่าให้ดีที่สุดเหมือนวันแรกที่เค้าตกหลุมรักเจน่าเลยย</p>
+
+          <div class="final-photo-mails" aria-label="Open memories">
+            <button id="open-memory-mail" class="mail-photo-btn" type="button">
+              <span class="mail-icon"></span>
+              <span>เปิดจดหมายรูป</span>
+            </button>
+          </div>
+
+          <div class="final-actions">
+            <button id="final-share-btn" class="secondary-btn" type="button">แชร์ลิงก์</button>
+            <button id="final-download-btn" class="secondary-btn" type="button">ดาวน์โหลดรูป</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="proposal-confirm" class="proposal-confirm" aria-hidden="true">
+    <div class="confirm-window" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="confirm-topbar" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="confirm-body">
+        <p class="confirm-spark">✦</p>
+        <h2 id="confirm-title">BE MINE?</h2>
+        <p>เจน่ายืนยันว่าจะเป็นแฟนกับอุ้มแล้วใช่มะะะ</p>
+        <div class="confirm-actions">
+          <button id="confirm-yes" type="button">YES</button>
+          <button id="confirm-no" type="button">NO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="photo-lightbox" class="photo-lightbox" aria-hidden="true">
+    <div class="photo-lightbox-window" role="dialog" aria-modal="true" aria-label="Expanded memory photo">
+      <button id="photo-close" class="photo-close" type="button" aria-label="Close photo">×</button>
+      <h2 id="photo-title">Memory</h2>
+      <div class="photo-viewer">
+        <button id="photo-prev" class="photo-nav photo-prev" type="button" aria-label="Previous photo">‹</button>
+        <img id="photo-preview" alt="Expanded memory" />
+        <p id="photo-fallback" class="photo-fallback" hidden>วางรูปไว้ในไฟล์ที่เลือก แล้วเปิดจดหมายนี้อีกครั้ง</p>
+        <button id="photo-next" class="photo-nav photo-next" type="button" aria-label="Next photo">›</button>
+      </div>
+      <p id="photo-counter" class="photo-counter">1 / 4</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+  <script src="assets/oumflower1-export-data.js?v=cleanup-1"></script>
+  <script src="script.js?v=cleanup-1"></script>
+</body>
+
+</html>
