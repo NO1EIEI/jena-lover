@@ -66,8 +66,12 @@
           <div id="quiz-options" class="answer-grid" role="list"></div>
           <div class="nav-btn-container"
             style="display: flex; gap: 24px; justify-content: center; width: 100%; margin-top: 10px;">
-            <button id="quiz-back" class="nav-btn" type="button" style="display: none;">◀</button>
-            <button id="quiz-next" class="nav-btn" type="button" disabled>▶</button>
+            <button id="quiz-back" class="nav-btn" type="button" style="display: none;">
+              <svg class="nav-arrow" viewBox="0 0 8 8" fill="currentColor"><rect x="4" y="0" width="1" height="8" /><rect x="3" y="1" width="1" height="6" /><rect x="2" y="2" width="1" height="4" /><rect x="1" y="3" width="1" height="2" /></svg>
+            </button>
+            <button id="quiz-next" class="nav-btn" type="button" disabled>
+              <svg class="nav-arrow" viewBox="0 0 8 8" fill="currentColor"><rect x="3" y="0" width="1" height="8" /><rect x="4" y="1" width="1" height="6" /><rect x="5" y="2" width="1" height="4" /><rect x="6" y="3" width="1" height="2" /></svg>
+            </button>
           </div>
         </div>
         <div class="season-visual" aria-hidden="true">
@@ -89,7 +93,9 @@
           </div>
           <p id="result-level" class="result-level"></p>
           <p id="result-date-msg" class="result-date-msg"></p>
-          <button id="result-next" class="nav-btn" type="button">▶</button>
+          <button id="result-next" class="nav-btn" type="button">
+            <svg class="nav-arrow" viewBox="0 0 8 8" fill="currentColor"><rect x="3" y="0" width="1" height="8" /><rect x="4" y="1" width="1" height="6" /><rect x="5" y="2" width="1" height="4" /><rect x="6" y="3" width="1" height="2" /></svg>
+          </button>
         </div>
       </div>
     </section>
@@ -311,10 +317,14 @@
       <button id="photo-close" class="photo-close" type="button" aria-label="Close photo">×</button>
       <h2 id="photo-title">Memory</h2>
       <div class="photo-viewer">
-        <button id="photo-prev" class="photo-nav photo-prev" type="button" aria-label="Previous photo">‹</button>
+        <button id="photo-prev" class="photo-nav photo-prev" type="button" aria-label="Previous photo">
+          <svg class="nav-arrow" viewBox="0 0 8 8" fill="currentColor"><rect x="4" y="0" width="1" height="8" /><rect x="3" y="1" width="1" height="6" /><rect x="2" y="2" width="1" height="4" /><rect x="1" y="3" width="1" height="2" /></svg>
+        </button>
         <img id="photo-preview" alt="Expanded memory" />
         <p id="photo-fallback" class="photo-fallback" hidden>วางรูปไว้ในไฟล์ที่เลือก แล้วเปิดจดหมายนี้อีกครั้ง</p>
-        <button id="photo-next" class="photo-nav photo-next" type="button" aria-label="Next photo">›</button>
+        <button id="photo-next" class="photo-nav photo-next" type="button" aria-label="Next photo">
+          <svg class="nav-arrow" viewBox="0 0 8 8" fill="currentColor"><rect x="3" y="0" width="1" height="8" /><rect x="4" y="1" width="1" height="6" /><rect x="5" y="2" width="1" height="4" /><rect x="6" y="3" width="1" height="2" /></svg>
+        </button>
       </div>
       <p id="photo-counter" class="photo-counter">1 / 4</p>
     </div>

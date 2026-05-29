@@ -2246,9 +2246,21 @@ body[data-proposal="accepted"] .pixel-book-pages {
   color: #8f006e;
   background: #fff3fb;
   box-shadow: 4px 4px 0 rgba(77, 25, 64, 0.24);
-  font-family: var(--pixel-title-font);
-  font-size: 2.2rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-arrow {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.photo-nav .nav-arrow {
+  width: 20px;
+  height: 20px;
 }
 
 .photo-lightbox-window {
@@ -2746,11 +2758,43 @@ body[data-proposal="accepted"] .pixel-book-pages {
 
   .answer-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 12px 4px 12px;
+  }
+
+  .answer-btn {
+    min-height: 48px;
+    font-size: 0.85rem;
+    border-width: 6px;
+    box-shadow: 
+      0 0 0 3px #1b1717,
+      inset 0 0 0 3px #1b1717,
+      inset 0 6px 0 3px #fdf0a6,
+      inset 0 -6px 0 3px #b37e28;
+  }
+
+  .answer-btn:hover,
+  .answer-btn.is-selected {
+    box-shadow: 
+      0 0 0 3px #1b1717,
+      inset 0 0 0 3px #1b1717,
+      inset 0 6px 0 3px #ff8da7,
+      inset 0 -6px 0 3px #851b32 !important;
   }
 
   .season-visual {
-    min-height: 220px;
+    min-height: 120px;
     order: -1;
+  }
+
+  .season-card {
+    padding: 14px 18px;
+    width: 100%;
+  }
+
+  .season-card h1 {
+    font-size: 1.15rem !important;
+    margin-bottom: 12px !important;
   }
 
   /* Compact layout and vertical centering to prevent scroll on memories page */
