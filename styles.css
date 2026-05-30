@@ -823,9 +823,7 @@ h1 {
 }
 
 .season-visual {
-  display: grid;
-  place-items: center;
-  perspective: 900px;
+  display: none !important;
 }
 
 .floating-island {

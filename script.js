@@ -979,13 +979,15 @@ async function downloadFinalImage(button = null) {
         line = chunk;
       });
       if (line) lines.push(line.trim());
-      exportCtx.save();
-      exportCtx.textAlign = "center";
+
+      const totalLines = Math.min(lines.length, maxLines);
+      const totalHeight = totalLines * lineHeight;
+      const startY = y - totalHeight / 2;
+
       lines.slice(0, maxLines).forEach((textLine, index) => {
-        exportCtx.fillText(textLine, x, y + index * lineHeight);
+        exportCtx.fillText(textLine, x, startY + index * lineHeight);
       });
-      exportCtx.restore();
-      return y + Math.min(lines.length, maxLines) * lineHeight;
+      return y + totalHeight;
     };
 
   const drawPixelHeart = (x, y, size) => {
@@ -1185,29 +1187,29 @@ async function downloadFinalImage(button = null) {
   }
 
   exportCtx.textAlign = "center";
+  exportCtx.textBaseline = "middle";
+
   exportCtx.fillStyle = "#b75084";
   exportCtx.font = `700 34px ${bodyFont}`;
   exportCtx.fillText("Final Page", 800, 528);
 
   exportCtx.fillStyle = "#62364b";
   exportCtx.font = `800 88px ${titleFont}`;
-  drawCenteredText(titleText, 800, 650, 1040, 104, 3);
+  drawCenteredText(titleText, 800, 700, 1040, 104, 3);
 
-  exportCtx.fillStyle = "#fff8df";
   drawRoundedRect(300, 858, 1000, 104, 0, "#fff8df", "#b75084", 12);
   exportCtx.fillStyle = "#7a3e5f";
   exportCtx.font = `700 38px ${bodyFont}`;
-  drawCenteredText(finalTimeText, 800, 925, 900, 46, 2);
+  drawCenteredText(finalTimeText, 800, 910, 900, 46, 2);
 
-  exportCtx.textAlign = "center";
   exportCtx.fillStyle = "#744555";
   exportCtx.font = `700 38px ${bodyFont}`;
-  drawCenteredText(bodyText, 800, 1085, 950, 60, 7);
+  drawCenteredText(bodyText, 800, 1180, 950, 60, 7);
 
   drawRoundedRect(350, 1418, 900, 126, 0, "#fff8df", "#b75084", 12);
   exportCtx.fillStyle = "#8f2b66";
   exportCtx.font = `800 48px ${titleFont}`;
-  drawCenteredText(coupleNamesText, 800, 1496, 820, 56, 2);
+  drawCenteredText(coupleNamesText, 800, 1481, 820, 56, 2);
 
   drawRoundedRect(278, 1588, 1044, 170, 0, "rgba(255, 248, 223, 0.62)", "#ffd997", 8);
   drawPixelEnvelope(360, 1638, 6);
