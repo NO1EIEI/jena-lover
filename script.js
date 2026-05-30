@@ -937,6 +937,10 @@ async function downloadFinalImage(button = null) {
     };
 
     const drawCenteredText = (text, x, y, maxWidth, lineHeight, maxLines = 3) => {
+      // Capture current font & fillStyle before save so we can re-apply them
+      const currentFont = exportCtx.font;
+      const currentFill = exportCtx.fillStyle;
+
       let words = [];
       if (typeof Intl !== "undefined" && Intl.Segmenter) {
         try {
@@ -981,13 +985,19 @@ async function downloadFinalImage(button = null) {
       if (line) lines.push(line.trim());
 
       const totalLines = Math.min(lines.length, maxLines);
-      const totalHeight = totalLines * lineHeight;
-      const startY = y - totalHeight / 2;
+
+      exportCtx.save();
+      exportCtx.textAlign = "center";
+      exportCtx.textBaseline = "top";
+      exportCtx.font = currentFont;
+      exportCtx.fillStyle = currentFill;
 
       lines.slice(0, maxLines).forEach((textLine, index) => {
-        exportCtx.fillText(textLine, x, startY + index * lineHeight);
+        exportCtx.fillText(textLine, x, y + index * lineHeight);
       });
-      return y + totalHeight;
+
+      exportCtx.restore();
+      return y + totalLines * lineHeight;
     };
 
   const drawPixelHeart = (x, y, size) => {
@@ -1187,29 +1197,28 @@ async function downloadFinalImage(button = null) {
   }
 
   exportCtx.textAlign = "center";
-  exportCtx.textBaseline = "middle";
-
+  exportCtx.textBaseline = "top";
   exportCtx.fillStyle = "#b75084";
   exportCtx.font = `700 34px ${bodyFont}`;
-  exportCtx.fillText("Final Page", 800, 528);
+  exportCtx.fillText("Final Page", 800, 510);
 
   exportCtx.fillStyle = "#62364b";
-  exportCtx.font = `800 88px ${titleFont}`;
-  drawCenteredText(titleText, 800, 700, 1040, 104, 3);
+  exportCtx.font = `800 78px ${titleFont}`;
+  drawCenteredText(titleText, 800, 580, 1040, 94, 3);
 
   drawRoundedRect(300, 858, 1000, 104, 0, "#fff8df", "#b75084", 12);
   exportCtx.fillStyle = "#7a3e5f";
-  exportCtx.font = `700 38px ${bodyFont}`;
-  drawCenteredText(finalTimeText, 800, 910, 900, 46, 2);
+  exportCtx.font = `700 36px ${bodyFont}`;
+  drawCenteredText(finalTimeText, 800, 885, 900, 44, 2);
 
   exportCtx.fillStyle = "#744555";
-  exportCtx.font = `700 38px ${bodyFont}`;
-  drawCenteredText(bodyText, 800, 1180, 950, 60, 7);
+  exportCtx.font = `700 36px ${bodyFont}`;
+  drawCenteredText(bodyText, 800, 1020, 950, 56, 7);
 
   drawRoundedRect(350, 1418, 900, 126, 0, "#fff8df", "#b75084", 12);
   exportCtx.fillStyle = "#8f2b66";
-  exportCtx.font = `800 48px ${titleFont}`;
-  drawCenteredText(coupleNamesText, 800, 1481, 820, 56, 2);
+  exportCtx.font = `800 44px ${titleFont}`;
+  drawCenteredText(coupleNamesText, 800, 1450, 820, 52, 2);
 
   drawRoundedRect(278, 1588, 1044, 170, 0, "rgba(255, 248, 223, 0.62)", "#ffd997", 8);
   drawPixelEnvelope(360, 1638, 6);
@@ -1222,9 +1231,11 @@ async function downloadFinalImage(button = null) {
     drawPixelStar(x, y, size, "#ffffff");
   });
 
+  exportCtx.textAlign = "center";
+  exportCtx.textBaseline = "top";
   exportCtx.fillStyle = "#7a3e5f";
   exportCtx.font = `700 30px ${bodyFont}`;
-  exportCtx.fillText("Jena Lover • saved from the pixel heart book", 800, 1970);
+  exportCtx.fillText("Jena Lover • saved from the pixel heart book", 800, 1950);
 
   const link = document.createElement("a");
   link.download = `jena-love-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}.png`;
