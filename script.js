@@ -171,6 +171,9 @@ let resultPercent = 0;
 let landingProgress = 0;
 let celebrationUntil = 0;
 let mobileNoPresses = 0;
+let lastScrollY = window.scrollY;
+let scrollVelocity = 0;
+
 
 let pixelTransition = {
   active: false,
@@ -387,7 +390,7 @@ function initThreeWorld() {
     const renderer = new THREE.WebGLRenderer({
       canvas: webglCanvas,
       antialias: true,
-      alpha: false,
+      alpha: true,
       powerPreference: "high-performance",
     });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
@@ -884,7 +887,7 @@ async function shareProposalLink(button) {
   button.textContent = "คัดลอกลิงก์แล้ว";
 }
 
-function downloadFinalImage(button = null) {
+async function downloadFinalImage(button = null) {
   const originalLabel = button ? button.textContent : "";
   if (button) {
     button.disabled = true;
@@ -892,82 +895,98 @@ function downloadFinalImage(button = null) {
   }
 
   try {
-  const exportCanvas = document.createElement("canvas");
-  exportCanvas.width = 1600;
-  exportCanvas.height = 2200;
-  const exportCtx = exportCanvas.getContext("2d");
-  const titleText = document.querySelector(".final-popup h1")?.textContent?.trim() || "เราเป็นแฟนกันแล้วนะ";
-  const displayedFinalTime = finalDate.textContent?.trim() || "";
-  const finalTimeText = displayedFinalTime.includes("เป็นแฟนกันเมื่อ")
-    ? displayedFinalTime
-    : formatCoupleSince(new Date());
-  const coupleNamesText = "เจน่า กับ น้องอุ้มอิ้ม (˶˃ ᵕ ˂˶)";
-  const bodyText = "ขอบคุณที่เจน่ามาเป็นส่วนหนึ่งของกันและกันนะ คุณแฟนคนแรกของเค้า เขาสัญญาจะดูแลเจน่าให้ดีที่สุดเหมือนวันแรกที่เค้าตกหลุมรักเจน่าเลยย";
-  const titleFont = '"Mali", "K2D", "Chakra Petch", "Segoe UI", sans-serif';
-  const bodyFont = '"K2D", "Mali", "Chakra Petch", "Segoe UI", sans-serif';
-
-  const drawRoundedRect = (x, y, width, height, radius, fill, stroke = null, lineWidth = 0) => {
-    exportCtx.beginPath();
-    exportCtx.moveTo(x + radius, y);
-    exportCtx.lineTo(x + width - radius, y);
-    exportCtx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    exportCtx.lineTo(x + width, y + height - radius);
-    exportCtx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    exportCtx.lineTo(x + radius, y + height);
-    exportCtx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    exportCtx.lineTo(x, y + radius);
-    exportCtx.quadraticCurveTo(x, y, x + radius, y);
-    exportCtx.closePath();
-    if (fill) {
-      exportCtx.fillStyle = fill;
-      exportCtx.fill();
+    if (document.fonts) {
+      await document.fonts.ready;
     }
-    if (stroke && lineWidth) {
-      exportCtx.strokeStyle = stroke;
-      exportCtx.lineWidth = lineWidth;
-      exportCtx.stroke();
-    }
-  };
 
-  const drawCenteredText = (text, x, y, maxWidth, lineHeight, maxLines = 3) => {
-    const words = text.split(/(\s+)/).filter(Boolean);
-    const lines = [];
-    let line = "";
-    words.forEach((word) => {
-      const test = line + word;
-      if (exportCtx.measureText(test).width <= maxWidth) {
-        line = test;
-        return;
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = 1600;
+    exportCanvas.height = 2200;
+    const exportCtx = exportCanvas.getContext("2d");
+    const titleText = document.querySelector(".final-popup h1")?.textContent?.trim() || "เราเป็นแฟนกันแล้วนะ";
+    const displayedFinalTime = finalDate.textContent?.trim() || "";
+    const finalTimeText = displayedFinalTime.includes("เป็นแฟนกันเมื่อ")
+      ? displayedFinalTime
+      : formatCoupleSince(new Date());
+    const coupleNamesText = "เจน่า กับ น้องอุ้มอิ้ม (˶˃ ᵕ ˂˶)";
+    const bodyText = "ขอบคุณที่เจน่ามาเป็นส่วนหนึ่งของกันและกันนะ คุณแฟนคนแรกของเค้า เขาสัญญาจะดูแลเจน่าให้ดีที่สุดเหมือนวันแรกที่เค้าตกหลุมรักเจน่าเลยย";
+    const titleFont = '"Mali", "K2D", "Chakra Petch", "Segoe UI", sans-serif';
+    const bodyFont = '"K2D", "Mali", "Chakra Petch", "Segoe UI", sans-serif';
+
+    const drawRoundedRect = (x, y, width, height, radius, fill, stroke = null, lineWidth = 0) => {
+      exportCtx.beginPath();
+      exportCtx.moveTo(x + radius, y);
+      exportCtx.lineTo(x + width - radius, y);
+      exportCtx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      exportCtx.lineTo(x + width, y + height - radius);
+      exportCtx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      exportCtx.lineTo(x + radius, y + height);
+      exportCtx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      exportCtx.lineTo(x, y + radius);
+      exportCtx.quadraticCurveTo(x, y, x + radius, y);
+      exportCtx.closePath();
+      if (fill) {
+        exportCtx.fillStyle = fill;
+        exportCtx.fill();
       }
-
-      if (line) lines.push(line.trim());
-
-      if (exportCtx.measureText(word).width <= maxWidth) {
-        line = word.trimStart();
-        return;
+      if (stroke && lineWidth) {
+        exportCtx.strokeStyle = stroke;
+        exportCtx.lineWidth = lineWidth;
+        exportCtx.stroke();
       }
+    };
 
-      let chunk = "";
-      Array.from(word).forEach((char) => {
-        const next = chunk + char;
-        if (exportCtx.measureText(next).width > maxWidth && chunk) {
-          lines.push(chunk);
-          chunk = char;
-        } else {
-          chunk = next;
+    const drawCenteredText = (text, x, y, maxWidth, lineHeight, maxLines = 3) => {
+      let words = [];
+      if (typeof Intl !== "undefined" && Intl.Segmenter) {
+        try {
+          const segmenter = new Intl.Segmenter("th", { granularity: "word" });
+          words = Array.from(segmenter.segment(text)).map(s => s.segment);
+        } catch (e) {
+          words = text.split(/(\s+)/).filter(Boolean);
         }
+      } else {
+        words = text.split(/(\s+)/).filter(Boolean);
+      }
+
+      const lines = [];
+      let line = "";
+      words.forEach((word) => {
+        const test = line + word;
+        if (exportCtx.measureText(test).width <= maxWidth) {
+          line = test;
+          return;
+        }
+
+        if (line) lines.push(line.trim());
+
+        if (exportCtx.measureText(word).width <= maxWidth) {
+          line = word;
+          return;
+        }
+
+        const graphemes = word.match(/[\s\S][\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]*/g) || Array.from(word);
+        let chunk = "";
+        graphemes.forEach((grapheme) => {
+          const next = chunk + grapheme;
+          if (exportCtx.measureText(next).width > maxWidth && chunk) {
+            lines.push(chunk);
+            chunk = grapheme;
+          } else {
+            chunk = next;
+          }
+        });
+        line = chunk;
       });
-      line = chunk;
-    });
-    if (line) lines.push(line.trim());
-    exportCtx.save();
-    exportCtx.textAlign = "center";
-    lines.slice(0, maxLines).forEach((textLine, index) => {
-      exportCtx.fillText(textLine, x, y + index * lineHeight);
-    });
-    exportCtx.restore();
-    return y + Math.min(lines.length, maxLines) * lineHeight;
-  };
+      if (line) lines.push(line.trim());
+      exportCtx.save();
+      exportCtx.textAlign = "center";
+      lines.slice(0, maxLines).forEach((textLine, index) => {
+        exportCtx.fillText(textLine, x, y + index * lineHeight);
+      });
+      exportCtx.restore();
+      return y + Math.min(lines.length, maxLines) * lineHeight;
+    };
 
   const drawPixelHeart = (x, y, size) => {
     const p = size / 8;
@@ -1269,10 +1288,14 @@ function seedTwinkleStars() {
   twinkleStars.length = 0;
   const count = Math.min(320, Math.max(140, Math.round((window.innerWidth * window.innerHeight) / 4000)));
   for (let i = 0; i < count; i += 1) {
+    const size = 0.8 + Math.random() * 1.8;
+    // Parallax scroll factor: larger stars scroll faster (closer), smaller stars scroll slower (further away)
+    const scrollFactor = 0.25 + (size - 0.8) / 1.8 * 1.55; 
     twinkleStars.push({
       x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight * 0.7,
-      size: 0.8 + Math.random() * 1.8,
+      y: Math.random() * window.innerHeight * 0.75,
+      size,
+      scrollFactor,
       phase: Math.random() * Math.PI * 2,
       speed: 0.5 + Math.random() * 3,
       baseAlpha: 0.3 + Math.random() * 0.7,
@@ -1284,17 +1307,23 @@ function seedTwinkleStars() {
 
 function drawTwinkleStars(time) {
   if (currentScene !== "landing") return;
-  const skyProgress = smoothStep(0.28, 0.55, landingProgress);
-  if (skyProgress > 0.85) return;
 
-  const fade = Math.max(0, 1 - skyProgress * 1.2);
   ctx.save();
+
+  const absVelocity = Math.abs(scrollVelocity);
 
   for (let i = 0; i < twinkleStars.length; i += 1) {
     const star = twinkleStars[i];
+    // Parallax slide position for each star:
+    const starScrollY = -landingProgress * 2 * window.innerHeight * star.scrollFactor;
+    const finalY = star.y + starScrollY;
+
+    // Check if the star is still visible in the viewport
+    if (finalY < -20 || finalY > window.innerHeight + 20) continue;
+
     const blink = Math.sin(time * 0.001 * star.speed + star.phase);
     const pulse = (blink + 1) * 0.5;
-    const a = fade * (star.baseAlpha * 0.3 + pulse * 0.7);
+    const a = star.baseAlpha * 0.3 + pulse * 0.7;
 
     if (a < 0.04) continue;
 
@@ -1308,9 +1337,20 @@ function drawTwinkleStars(time) {
       ctx.fillStyle = "#ffffff";
     }
 
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.size * (0.6 + pulse * 0.4), 0, Math.PI * 2);
-    ctx.fill();
+    if (absVelocity > 1.2) {
+      // Draw parallax star as a beautiful light trail when scrolling
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.lineWidth = Math.max(0.75, star.size * 0.5);
+      ctx.beginPath();
+      ctx.moveTo(star.x, finalY);
+      ctx.lineTo(star.x, finalY - scrollVelocity * 0.28 * star.scrollFactor);
+      ctx.stroke();
+    } else {
+      // Normal twinkling dot
+      ctx.beginPath();
+      ctx.arc(star.x, finalY, star.size * (0.6 + pulse * 0.4), 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   ctx.restore();
@@ -1365,7 +1405,11 @@ function updateThreeWorld(time) {
   const skyColor = new THREE.Color(0x6ecbf3);
   const storyColor = new THREE.Color(activeStorybook ? 0xffb7d1 : 0x67d5ff);
   const bgColor = darkColor.clone().lerp(skyColor, sceneLight).lerp(storyColor, activeStorybook ? 0.34 : 0);
-  threeWorld.scene.background = bgColor;
+  if (currentScene === "landing") {
+    threeWorld.scene.background = null;
+  } else {
+    threeWorld.scene.background = bgColor;
+  }
   threeWorld.scene.fog.color.copy(bgColor);
   threeWorld.scene.fog.near = currentScene === "landing" ? 8 : 6;
   threeWorld.scene.fog.far = currentScene === "proposal" ? 34 : 28;
@@ -1410,40 +1454,65 @@ function updateThreeWorld(time) {
 function drawBackground(time) {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  const gradient = ctx.createLinearGradient(0, 0, width, height);
-  const landingSky = smoothStep(0.28, 0.55, landingProgress);
-  const palettes = {
-    landing: [
-      blendColor("#171a1c", "#1b3446", landingSky),
-      blendColor("#111416", "#4ea5dc", landingSky),
-      blendColor("#080a0d", "#aee8ff", landingSky),
-    ],
-    quiz: ["#2436a9", "#6bdfff", "#ffb26d"],
-    story: ["#ffca66", "#ff8fa5", "#6956e8"],
-    gallery: ["#1a184d", "#7155d9", "#ffb86c"],
-    gift: ["#ffffff", "#ffffff", "#ffffff"],
-    proposal: ["#120d38", "#3e39c9", "#ff7f9f"],
-  };
-  const colors = palettes[currentScene] || palettes.landing;
-  gradient.addColorStop(0, colors[0]);
-  gradient.addColorStop(0.54, colors[1]);
-  gradient.addColorStop(1, colors[2]);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
 
   ctx.save();
-  ctx.globalAlpha = 0.22;
-  for (let i = 0; i < 7; i += 1) {
-    const radius = width * (0.12 + i * 0.025);
-    const x = width * (0.18 + i * 0.13) + Math.sin(time * 0.0004 + i) * 40;
-    const y = height * (0.18 + (i % 3) * 0.24) + Math.cos(time * 0.00035 + i) * 34;
-    const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    g.addColorStop(0, `hsla(${38 + i * 28}, 100%, 78%, 0.58)`);
-    g.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
+  if (currentScene === "landing") {
+    ctx.translate(0, -window.scrollY);
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 3 * height);
+    gradient.addColorStop(0, "#0c0d12");        // Deep Space
+    gradient.addColorStop(0.25, "#11141a");     // Space depth
+    gradient.addColorStop(0.5, "#1b3446");      // Atmosphere upper
+    gradient.addColorStop(0.7, "#4ea5dc");      // Atmosphere lower
+    gradient.addColorStop(0.85, "#bceeff");     // Sky near forest
+    gradient.addColorStop(1.0, "#d9ee7a");      // Meadow ground
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, 3 * height);
+
+    // Draw scrolling glow circles in landing scene
+    ctx.globalAlpha = 0.22;
+    for (let i = 0; i < 7; i += 1) {
+      const radius = width * (0.12 + i * 0.025);
+      const x = width * (0.18 + i * 0.13) + Math.sin(time * 0.0004 + i) * 40;
+      const y = (3 * height) * (0.1 + (i % 5) * 0.18) + Math.cos(time * 0.00035 + i) * 34;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, `hsla(${38 + i * 28}, 100%, 78%, 0.58)`);
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else {
+    // Normal background for subsequent scenes
+    const palettes = {
+      quiz: ["#2436a9", "#6bdfff", "#ffb26d"],
+      story: ["#ffca66", "#ff8fa5", "#6956e8"],
+      gallery: ["#1a184d", "#7155d9", "#ffb86c"],
+      gift: ["#ffffff", "#ffffff", "#ffffff"],
+      proposal: ["#120d38", "#3e39c9", "#ff7f9f"],
+    };
+    const colors = palettes[currentScene] || palettes.quiz;
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, colors[0]);
+    gradient.addColorStop(0.54, colors[1]);
+    gradient.addColorStop(1, colors[2]);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.globalAlpha = 0.22;
+    for (let i = 0; i < 7; i += 1) {
+      const radius = width * (0.12 + i * 0.025);
+      const x = width * (0.18 + i * 0.13) + Math.sin(time * 0.0004 + i) * 40;
+      const y = height * (0.18 + (i % 3) * 0.24) + Math.cos(time * 0.00035 + i) * 34;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, `hsla(${38 + i * 28}, 100%, 78%, 0.58)`);
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
   ctx.restore();
 }
@@ -1452,14 +1521,13 @@ function drawAtmosphericMist(time) {
   if (currentScene !== "landing") return;
   const width = window.innerWidth;
   const height = window.innerHeight;
-  const cloudProgress = smoothStep(0.22, 0.56, landingProgress);
-  const cloudFade = 1 - smoothStep(0.72, 0.9, landingProgress);
-  const mist = cloudProgress * cloudFade;
-  if (mist <= 0.02) return;
+  const slideY = -window.scrollY + height;
+  if (slideY <= -height || slideY >= height) return;
 
   ctx.save();
+  ctx.translate(0, slideY);
   ctx.globalCompositeOperation = "screen";
-  ctx.globalAlpha = mist;
+  ctx.globalAlpha = 0.72;
 
   const vertical = ctx.createLinearGradient(0, 0, 0, height);
   vertical.addColorStop(0, "rgba(255, 255, 255, 0)");
@@ -1485,7 +1553,7 @@ function drawAtmosphericMist(time) {
     ctx.fill();
   }
 
-  ctx.globalAlpha = mist * 0.18;
+  ctx.globalAlpha = 0.18;
   ctx.strokeStyle = "rgba(255,255,255,0.8)";
   ctx.lineWidth = 1;
   for (let i = 0; i < 46; i += 1) {
@@ -1500,11 +1568,12 @@ function drawAtmosphericMist(time) {
 
 function drawPixelForestScene(time) {
   if (currentScene !== "landing") return;
-  const forestProgress = smoothStep(0.6, 0.88, landingProgress);
-  if (forestProgress <= 0.02) return;
 
   const width = window.innerWidth;
   const height = window.innerHeight;
+  const slideY = -window.scrollY + 2 * height;
+  if (slideY <= -height || slideY >= height) return;
+
   const pixel = Math.max(3, Math.round(Math.min(width, height) / 210));
   const snap = (value) => Math.round(value / pixel) * pixel;
   const rect = (x, y, w, h, color) => {
@@ -1523,16 +1592,9 @@ function drawPixelForestScene(time) {
   };
 
   ctx.save();
+  ctx.translate(0, slideY);
   ctx.imageSmoothingEnabled = false;
-  ctx.globalAlpha = forestProgress;
-
-  const sky = ctx.createLinearGradient(0, 0, 0, height);
-  sky.addColorStop(0, "#4b8ed0");
-  sky.addColorStop(0.45, "#80bfed");
-  sky.addColorStop(0.72, "#b9e7ff");
-  sky.addColorStop(1, "#f1fff3");
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, width, height);
+  ctx.globalAlpha = 1.0;
 
   drawPixelCloudBank(rect, width, height, pixel, time);
   drawPixelMountains(rect, poly, width, height, pixel, time);
@@ -3076,6 +3138,11 @@ function drawParticle(particle, time) {
   } else if (particleMode === "rain") {
     // Rain falls straight down
     particle.y += 6 * depth;
+  } else if (particleMode === "space") {
+    // Space dust reacts to scrolling velocity
+    particle.drift += 0.006 * depth;
+    particle.x += Math.cos(particle.drift) * particle.speed * speedMultiplier;
+    particle.y += (particle.speed * depth) - (scrollVelocity * 0.58 * depth);
   } else {
     particle.drift += 0.006 * depth;
     particle.x += Math.cos(particle.drift) * particle.speed * speedMultiplier;
@@ -3085,6 +3152,9 @@ function drawParticle(particle, time) {
   // 3. Coordinate bounds reset
   if (particle.y > height + 24) {
     particle.y = -24;
+    particle.x = Math.random() * width;
+  } else if (particle.y < -24) {
+    particle.y = height + 24;
     particle.x = Math.random() * width;
   }
   if (particle.x < -28) particle.x = width + 28;
@@ -3162,9 +3232,19 @@ function drawParticle(particle, time) {
   } else if (particleMode === "space") {
     ctx.globalAlpha = 0.52 + particle.z * 0.46;
     ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-    ctx.beginPath();
-    ctx.arc(0, 0, Math.max(0.55, particle.size * 0.34), 0, Math.PI * 2);
-    ctx.fill();
+    const absVelocity = Math.abs(scrollVelocity);
+    if (absVelocity > 1.2) {
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.86)";
+      ctx.lineWidth = Math.max(1, particle.size * 0.34 * depth);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -scrollVelocity * 0.38 * depth);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(0.55, particle.size * 0.34), 0, Math.PI * 2);
+      ctx.fill();
+    }
   } else if (particleMode === "autumn" || particleMode === "spring") {
     ctx.fillStyle = `hsla(${seasonHue + Math.random() * 16}, 94%, 72%, 0.82)`;
     if (currentScene !== "landing") {
@@ -3343,27 +3423,36 @@ function updateAndDrawPixelTransition(time) {
 }
 
 function animate(time = 0) {
+  const currentScrollY = window.scrollY;
+  const instantVelocity = currentScrollY - lastScrollY;
+  lastScrollY = currentScrollY;
+  scrollVelocity = scrollVelocity * 0.85 + instantVelocity * 0.15;
+
   updateThreeWorld(time);
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-  if (currentScene === "quiz") {
-    drawQuizPixelScene(time);
-  } else if (currentScene === "result") {
-    currentSeason = "result";
-    drawQuizPixelScene(time);
-  } else if (currentScene === "story") {
-    currentSeason = "story";
-    drawQuizPixelScene(time);
-  } else if (currentScene === "gallery") {
-    currentSeason = "gallery";
-    drawQuizPixelScene(time);
-  } else if (currentScene === "gift") {
-    updateGiftThreeWorld(time);
-  } else if (!threeReady) {
+  if (currentScene === "landing") {
     drawBackground(time);
+    drawTwinkleStars(time);
+    drawAtmosphericMist(time);
+    drawPixelForestScene(time);
+  } else {
+    if (currentScene === "quiz") {
+      drawQuizPixelScene(time);
+    } else if (currentScene === "result") {
+      currentSeason = "result";
+      drawQuizPixelScene(time);
+    } else if (currentScene === "story") {
+      currentSeason = "story";
+      drawQuizPixelScene(time);
+    } else if (currentScene === "gallery") {
+      currentSeason = "gallery";
+      drawQuizPixelScene(time);
+    } else if (currentScene === "gift") {
+      updateGiftThreeWorld(time);
+    } else if (!threeReady) {
+      drawBackground(time);
+    }
   }
-  drawTwinkleStars(time);
-  drawAtmosphericMist(time);
-  drawPixelForestScene(time);
   if (!prefersReducedMotion) {
     particles.forEach((particle) => drawParticle(particle, time));
   }
