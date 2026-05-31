@@ -436,6 +436,7 @@ body[data-scene="landing"] .paint-texture {
   max-width: 680px;
   margin: 0 auto;
   justify-items: center;
+  align-content: center;
 }
 
 .gallery-layout {
@@ -2798,6 +2799,12 @@ body[data-proposal="accepted"] .pixel-book-pages {
   .season-card {
     padding: 14px 18px;
     width: 100%;
+    margin-top: 0;
+  }
+
+  .quiz-layout {
+    align-content: end;
+    padding-bottom: clamp(60px, 12vh, 120px);
   }
 
   .season-card h1 {
