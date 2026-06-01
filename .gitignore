@@ -23,3 +23,5 @@ node_modules/
 .gemini/
 dist/
 tmp/
+.codex-publish-*/
+.chrome-responsive-check/
