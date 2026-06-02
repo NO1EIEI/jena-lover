@@ -657,7 +657,7 @@ function calculateQuizResult() {
       dateMsg = "เจน่า จำวันที่เราคุยกันครั้งแรกถูกด้วยย";
     } else {
       const daysOff = chosenOption.daysOff || 0;
-      dateMsg = `คลาดเคลื่อนไป ${daysOff} วัน! วันจริงคือ 14 feb นะะ`;
+      dateMsg = `คลาดเคลื่อนไป ${daysOff} วัน! วันจริงคือ Valentine's นะะ`;
     }
   }
 
@@ -1380,7 +1380,7 @@ function createBurst(x, y, count = 18, kind = "spark") {
 
 function seedParticles() {
   particles.length = 0;
-  const count = Math.min(520, Math.max(220, Math.round((window.innerWidth * window.innerHeight) / 3600)));
+  const count = Math.min(400, Math.max(50, Math.round((window.innerWidth * window.innerHeight) / 6000)));
   for (let i = 0; i < count; i += 1) {
     particles.push({
       x: Math.random() * window.innerWidth,
@@ -1396,7 +1396,7 @@ function seedParticles() {
 
 function seedTwinkleStars() {
   twinkleStars.length = 0;
-  const count = Math.min(320, Math.max(140, Math.round((window.innerWidth * window.innerHeight) / 4000)));
+  const count = Math.min(240, Math.max(40, Math.round((window.innerWidth * window.innerHeight) / 7000)));
   for (let i = 0; i < count; i += 1) {
     const size = 0.8 + Math.random() * 1.8;
     // Parallax scroll factor: larger stars scroll faster (closer), smaller stars scroll slower (further away)
@@ -1457,9 +1457,8 @@ function drawTwinkleStars(time) {
       ctx.stroke();
     } else {
       // Normal twinkling dot
-      ctx.beginPath();
-      ctx.arc(star.x, finalY, star.size * (0.6 + pulse * 0.4), 0, Math.PI * 2);
-      ctx.fill();
+      const r = star.size * (0.6 + pulse * 0.4);
+      ctx.fillRect(star.x - r, finalY - r, r * 2, r * 2);
     }
   }
 
@@ -1496,7 +1495,8 @@ function resizeCanvas() {
 function updateThreeWorld(time) {
   if (!threeWorld) return;
 
-  if (currentScene === "gift") {
+  const hiddenScenes = ["landing", "quiz", "result", "story", "gallery", "gift"];
+  if (hiddenScenes.includes(currentScene)) {
     webglCanvas.style.display = "none";
     return;
   } else {
@@ -1581,10 +1581,17 @@ function drawBackground(time) {
 
     // Draw scrolling glow circles in landing scene
     ctx.globalAlpha = 0.22;
+    const scrollY = window.scrollY;
     for (let i = 0; i < 7; i += 1) {
       const radius = width * (0.12 + i * 0.025);
       const x = width * (0.18 + i * 0.13) + Math.sin(time * 0.0004 + i) * 40;
       const y = (3 * height) * (0.1 + (i % 5) * 0.18) + Math.cos(time * 0.00035 + i) * 34;
+
+      // Skip drawing if circle is outside the viewport
+      if (y + radius < scrollY || y - radius > scrollY + height) {
+        continue;
+      }
+
       const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
       g.addColorStop(0, `hsla(${38 + i * 28}, 100%, 78%, 0.58)`);
       g.addColorStop(1, "rgba(255,255,255,0)");
@@ -1666,8 +1673,8 @@ function drawAtmosphericMist(time) {
   ctx.globalAlpha = 0.18;
   ctx.strokeStyle = "rgba(255,255,255,0.8)";
   ctx.lineWidth = 1;
-  for (let i = 0; i < 46; i += 1) {
-    const y = (height * 0.26 + i * height * 0.014 + Math.sin(time * 0.0004 + i) * 8) % height;
+  for (let i = 0; i < 20; i += 1) {
+    const y = (height * 0.26 + i * height * 0.032 + Math.sin(time * 0.0004 + i) * 8) % height;
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.bezierCurveTo(width * 0.28, y - 18, width * 0.58, y + 22, width, y - 8);
@@ -2977,46 +2984,57 @@ function drawPixelStoryScene(rect, poly, width, height, pixel, time) {
   drawPixelWind(rect, width, height, pixel, time);
 }
 
-function drawPixelGalleryScene(rect, poly, width, height, pixel, time) {
-  // Helper to draw a pixel-art heart centered inside white squares
-  const drawPixelHeart = (hx, hy, p) => {
-    const drawRect = (rx, ry, rw, rh, c) => {
-      ctx.fillStyle = c;
-      ctx.fillRect(Math.round(hx + rx * p), Math.round(hy + ry * p), rw * p, rh * p);
-    };
-    const outline = "#e55b7c";
-    const fill = "#fca5be";
-    const highlight = "#ffffff";
+let heartCanvas = null;
 
-    // Fills
-    drawRect(3, 1, 1, 1, fill);
-    drawRect(5, 1, 2, 1, fill);
-    drawRect(2, 2, 6, 1, fill);
-    drawRect(1, 3, 7, 1, fill);
-    drawRect(2, 4, 5, 1, fill);
-    drawRect(3, 5, 3, 1, fill);
-    drawRect(4, 6, 1, 1, fill);
-
-    // Highlight
-    drawRect(2, 1, 1, 1, highlight);
-    drawRect(1, 2, 1, 1, highlight);
-
-    // Outline
-    drawRect(2, 0, 2, 1, outline);
-    drawRect(5, 0, 2, 1, outline);
-    drawRect(1, 1, 1, 1, outline);
-    drawRect(4, 1, 1, 1, outline);
-    drawRect(7, 1, 1, 1, outline);
-    drawRect(0, 2, 1, 2, outline);
-    drawRect(8, 2, 1, 2, outline);
-    drawRect(1, 4, 1, 1, outline);
-    drawRect(7, 4, 1, 1, outline);
-    drawRect(2, 5, 1, 1, outline);
-    drawRect(6, 5, 1, 1, outline);
-    drawRect(3, 6, 1, 1, outline);
-    drawRect(5, 6, 1, 1, outline);
-    drawRect(4, 7, 1, 1, outline);
+function prepareHeartCanvas(p) {
+  if (heartCanvas && heartCanvas.width === 9 * p && heartCanvas.height === 8 * p) {
+    return;
+  }
+  heartCanvas = document.createElement("canvas");
+  heartCanvas.width = 9 * p;
+  heartCanvas.height = 8 * p;
+  const hctx = heartCanvas.getContext("2d");
+  
+  const drawRect = (rx, ry, rw, rh, c) => {
+    hctx.fillStyle = c;
+    hctx.fillRect(rx * p, ry * p, rw * p, rh * p);
   };
+  const outline = "#e55b7c";
+  const fill = "#fca5be";
+  const highlight = "#ffffff";
+
+  // Fills
+  drawRect(3, 1, 1, 1, fill);
+  drawRect(5, 1, 2, 1, fill);
+  drawRect(2, 2, 6, 1, fill);
+  drawRect(1, 3, 7, 1, fill);
+  drawRect(2, 4, 5, 1, fill);
+  drawRect(3, 5, 3, 1, fill);
+  drawRect(4, 6, 1, 1, fill);
+
+  // Highlight
+  drawRect(2, 1, 1, 1, highlight);
+  drawRect(1, 2, 1, 1, highlight);
+
+  // Outline
+  drawRect(2, 0, 2, 1, outline);
+  drawRect(5, 0, 2, 1, outline);
+  drawRect(1, 1, 1, 1, outline);
+  drawRect(4, 1, 1, 1, outline);
+  drawRect(7, 1, 1, 1, outline);
+  drawRect(0, 2, 1, 2, outline);
+  drawRect(8, 2, 1, 2, outline);
+  drawRect(1, 4, 1, 1, outline);
+  drawRect(7, 4, 1, 1, outline);
+  drawRect(2, 5, 1, 1, outline);
+  drawRect(6, 5, 1, 1, outline);
+  drawRect(3, 6, 1, 1, outline);
+  drawRect(5, 6, 1, 1, outline);
+  drawRect(4, 7, 1, 1, outline);
+}
+
+function drawPixelGalleryScene(rect, poly, width, height, pixel, time) {
+  prepareHeartCanvas(pixel);
 
   // Checkered board sizes (alternate white and pink)
   const S = pixel * 24;
@@ -3039,10 +3057,10 @@ function drawPixelGalleryScene(rect, poly, width, height, pixel, time) {
         ctx.fillStyle = "#ffffff"; // White
         ctx.fillRect(Math.round(drawX), Math.round(drawY), S, S);
 
-        // Draw centered pixel-art heart
+        // Draw centered pixel-art heart using cached canvas
         const heartX = drawX + (S - 9 * pixel) / 2;
         const heartY = drawY + (S - 8 * pixel) / 2;
-        drawPixelHeart(heartX, heartY, pixel);
+        ctx.drawImage(heartCanvas, Math.round(heartX), Math.round(heartY));
       }
     }
   }
@@ -3157,7 +3175,8 @@ function drawPixelMeadow(rect, width, height, pixel, time) {
   rect(0, top + pixel * 26, width, pixel * 18, "#8ed24d");
   rect(0, top + pixel * 45, width, pixel * 40, "#5fb447");
 
-  for (let i = 0; i < 210; i += 1) {
+  const meadowCount = Math.min(120, Math.max(40, Math.round(width / 12)));
+  for (let i = 0; i < meadowCount; i += 1) {
     const x = (i * 37 + Math.sin(i) * 19) % width;
     const y = top + pixel * 8 + ((i * 23) % Math.max(1, height - top - pixel * 12));
     const color = i % 11 === 0 ? "#ff6b8e" : i % 7 === 0 ? "#fff8b5" : i % 5 === 0 ? "#ffffff" : "#2f9c42";
@@ -3201,7 +3220,8 @@ function drawPixelTree(rect, x, baseY, pixel, scale, large, time) {
 function drawPixelForeground(rect, width, height, pixel, time) {
   const y = height * 0.86;
   rect(0, y, width, height - y, "#163f38");
-  for (let i = 0; i < 120; i += 1) {
+  const fgCount = Math.min(70, Math.max(25, Math.round(width / 20)));
+  for (let i = 0; i < fgCount; i += 1) {
     const x = (i * 53) % width;
     const color = i % 4 === 0 ? "#57b3e5" : i % 5 === 0 ? "#b34cc9" : i % 6 === 0 ? "#f5de4e" : "#6dd05a";
     rect(x, y + ((i * 17) % Math.max(pixel, height - y - pixel * 2)), pixel * 2, pixel * 2, color);

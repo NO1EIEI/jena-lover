@@ -2106,7 +2106,7 @@ body[data-proposal="accepted"] .pixel-book-pages {
     inset 12px 12px 0 rgba(255, 255, 255, 0.32);
   clip-path: polygon(50% 92%, 10% 54%, 10% 24%, 28% 8%, 50% 24%, 72% 8%, 90% 24%, 90% 54%);
   image-rendering: pixelated;
-  animation: heart-bg-float 7s steps(8, end) infinite;
+  animation: heart-bg-float 7s ease-in-out infinite;
 }
 
 .heart-one { left: 8%; top: 8%; animation-delay: -1s; }
@@ -2134,7 +2134,7 @@ body[data-proposal="accepted"] .pixel-book-pages {
   font-family: var(--pixel-title-font);
   font-weight: 900;
   line-height: 1;
-  animation: cute-float-around 9s steps(10, end) infinite;
+  animation: cute-float-around 9s ease-in-out infinite;
 }
 
 .float-milk { left: 7%; bottom: 20%; background: #cdf6ff; color: #ff5aa1; animation-delay: -1.2s; }
