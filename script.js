@@ -1159,30 +1159,103 @@ async function downloadFinalImage(button = null) {
       drawBgEmoji(emoji, x, y, size, alpha, rotate);
     });
 
+    // --- Two-pass layout: measure first, then draw card + text ---
+    const centerX = 800;
+    const textMaxWidth = 1040;
+    const cardStartY = 294; // Top of card
+    const contentStartY = 480; // Where text content begins inside card
+
+    // ---- PASS 1: Measure text layout to determine card height ----
+    // We use a hidden measurement canvas with the same fonts
+    const measureCanvas = document.createElement("canvas");
+    measureCanvas.width = 1600;
+    measureCanvas.height = 2200;
+    const measureCtx = measureCanvas.getContext("2d");
+
+    const measureText = (text, font, maxWidth, lineHeight, maxLines = 3) => {
+      measureCtx.font = font;
+      let words = [];
+      if (typeof Intl !== "undefined" && Intl.Segmenter) {
+        try {
+          const segmenter = new Intl.Segmenter("th", { granularity: "word" });
+          words = Array.from(segmenter.segment(text)).map(s => s.segment);
+        } catch (e) {
+          words = text.split(/(\s+)/).filter(Boolean);
+        }
+      } else {
+        words = text.split(/(\s+)/).filter(Boolean);
+      }
+      const lines = [];
+      let line = "";
+      words.forEach((word) => {
+        const test = line + word;
+        if (measureCtx.measureText(test).width <= maxWidth) { line = test; return; }
+        if (line) lines.push(line.trim());
+        if (measureCtx.measureText(word).width <= maxWidth) { line = word; return; }
+        const graphemes = word.match(/[\s\S][\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]*/g) || Array.from(word);
+        let chunk = "";
+        graphemes.forEach((grapheme) => {
+          const next = chunk + grapheme;
+          if (measureCtx.measureText(next).width > maxWidth && chunk) { lines.push(chunk); chunk = grapheme; }
+          else { chunk = next; }
+        });
+        line = chunk;
+      });
+      if (line) lines.push(line.trim());
+      return Math.min(lines.length, maxLines) * lineHeight;
+    };
+
+    let mY = contentStartY;
+    mY += 54; // "Final Page" kicker
+    mY += measureText(titleText, `800 78px ${titleFont}`, textMaxWidth, 94, 3) + 36;
+    const dateBoxH = 88;
+    mY += dateBoxH + 32;
+    mY += measureText(bodyText, `700 36px ${bodyFont}`, 950, 56, 7) + 36;
+    const namesBoxH = 106;
+    mY += namesBoxH + 32;
+    const decoRowH = 170;
+    mY += decoRowH;
+    const cardEndY = mY + 40; // Bottom padding
+    const totalCardH = cardEndY - cardStartY;
+
+    // ---- PASS 2: Draw card background ----
+    // Shadow
     exportCtx.fillStyle = "rgba(108, 45, 79, 0.38)";
-    exportCtx.fillRect(192, 332, 1288, 1540);
+    exportCtx.fillRect(192, cardStartY + 38, 1288, totalCardH);
+    // Dark border fill
     exportCtx.fillStyle = "#6c2d4f";
-    exportCtx.fillRect(156, 294, 1288, 1540);
+    exportCtx.fillRect(156, cardStartY, 1288, totalCardH);
+    // Light inner fill
     exportCtx.fillStyle = "#fff8df";
-    exportCtx.fillRect(190, 328, 1220, 1470);
+    exportCtx.fillRect(190, cardStartY + 34, 1220, totalCardH - 68);
+    // Gold ribbon bar at top
     exportCtx.fillStyle = "#ffd997";
-    exportCtx.fillRect(224, 362, 1152, 60);
+    exportCtx.fillRect(224, cardStartY + 68, 1152, 60);
+    // Content area fill
+    const contentFillTop = cardStartY + 168;
+    const contentFillH = cardEndY - contentFillTop - 34;
     exportCtx.fillStyle = "#ffe6b8";
-    exportCtx.fillRect(224, 462, 1152, 1160);
+    exportCtx.fillRect(224, contentFillTop, 1152, contentFillH);
+    // Bottom tinted area
+    const bottomTintY = cardEndY - 34 - decoRowH - 60;
     exportCtx.fillStyle = "rgba(221, 135, 91, 0.12)";
-    exportCtx.fillRect(224, 1425, 1152, 197);
+    exportCtx.fillRect(224, bottomTintY, 1152, cardEndY - 34 - bottomTintY);
+    // Outer border stroke
     exportCtx.strokeStyle = "#6c2d4f";
     exportCtx.lineWidth = 18;
-    exportCtx.strokeRect(190, 328, 1220, 1470);
+    exportCtx.strokeRect(190, cardStartY + 34, 1220, totalCardH - 68);
+    // Inner border stroke
     exportCtx.strokeStyle = "#ffd997";
     exportCtx.lineWidth = 10;
-    exportCtx.strokeRect(224, 362, 1152, 1400);
+    exportCtx.strokeRect(224, cardStartY + 68, 1152, totalCardH - 136);
 
+    // Pink ribbon bars
     exportCtx.fillStyle = "#ff8cc1";
     [0, 1, 2, 3].forEach((i) => {
-      exportCtx.fillRect(262 + i * 260, 384, 178, 28);
+      exportCtx.fillRect(262 + i * 260, cardStartY + 90, 178, 28);
     });
 
+    // Sticker
     const sticker = exportStickerImage.complete && exportStickerImage.naturalWidth > 0
       ? exportStickerImage
       : null;
@@ -1196,46 +1269,70 @@ async function downloadFinalImage(button = null) {
       exportCtx.imageSmoothingEnabled = false;
     }
 
+    // ---- PASS 3: Draw text content with flowing layout ----
+    let cursorY = contentStartY;
+
+    // "Final Page" kicker
     exportCtx.textAlign = "center";
     exportCtx.textBaseline = "top";
     exportCtx.fillStyle = "#b75084";
     exportCtx.font = `700 34px ${bodyFont}`;
-    exportCtx.fillText("Final Page", 800, 510);
+    exportCtx.fillText("Final Page", centerX, cursorY);
+    cursorY += 54;
 
+    // Title
     exportCtx.fillStyle = "#62364b";
     exportCtx.font = `800 78px ${titleFont}`;
-    drawCenteredText(titleText, 800, 580, 1040, 94, 3);
+    cursorY = drawCenteredText(titleText, centerX, cursorY, textMaxWidth, 94, 3);
+    cursorY += 36;
 
-    drawRoundedRect(300, 858, 1000, 104, 0, "#fff8df", "#b75084", 12);
+    // Date box (auto-measured width)
+    exportCtx.font = `700 36px ${bodyFont}`;
+    const dateMetrics = exportCtx.measureText(finalTimeText);
+    const dateBoxW = Math.min(1000, dateMetrics.width + 80);
+    const dateBoxX = centerX - dateBoxW / 2;
+    drawRoundedRect(dateBoxX, cursorY, dateBoxW, dateBoxH, 0, "#fff8df", "#b75084", 12);
     exportCtx.fillStyle = "#7a3e5f";
     exportCtx.font = `700 36px ${bodyFont}`;
-    drawCenteredText(finalTimeText, 800, 885, 900, 44, 2);
+    drawCenteredText(finalTimeText, centerX, cursorY + 22, dateBoxW - 40, 44, 2);
+    cursorY += dateBoxH + 32;
 
+    // Body text
     exportCtx.fillStyle = "#744555";
     exportCtx.font = `700 36px ${bodyFont}`;
-    drawCenteredText(bodyText, 800, 1020, 950, 56, 7);
+    cursorY = drawCenteredText(bodyText, centerX, cursorY, 950, 56, 7);
+    cursorY += 36;
 
-    drawRoundedRect(350, 1418, 900, 126, 0, "#fff8df", "#b75084", 12);
+    // Couple names box (auto-measured)
+    exportCtx.font = `800 44px ${titleFont}`;
+    const namesMetrics = exportCtx.measureText(coupleNamesText);
+    const namesBoxW = Math.min(1000, namesMetrics.width + 80);
+    const namesBoxX = centerX - namesBoxW / 2;
+    drawRoundedRect(namesBoxX, cursorY, namesBoxW, namesBoxH, 0, "#fff8df", "#b75084", 12);
     exportCtx.fillStyle = "#8f2b66";
     exportCtx.font = `800 44px ${titleFont}`;
-    drawCenteredText(coupleNamesText, 800, 1450, 820, 52, 2);
+    drawCenteredText(coupleNamesText, centerX, cursorY + 28, namesBoxW - 40, 52, 2);
+    cursorY += namesBoxH + 32;
 
-    drawRoundedRect(278, 1588, 1044, 170, 0, "rgba(255, 248, 223, 0.62)", "#ffd997", 8);
-    drawPixelEnvelope(360, 1638, 6);
-    drawPixelHeart(542, 1632, 92);
-    drawPixelGift(714, 1618, 6);
-    drawPixelRing(908, 1624, 6);
-    drawPixelFlower(1088, 1618, 6);
-    drawPixelSparkIcon(1222, 1646, 6);
-    [[468, 1610, 32], [660, 1710, 28], [1032, 1712, 30], [1190, 1608, 26]].forEach(([x, y, size]) => {
+    // Pixel decorations footer row
+    const decoY = cursorY;
+    drawRoundedRect(278, decoY, 1044, decoRowH, 0, "rgba(255, 248, 223, 0.62)", "#ffd997", 8);
+    drawPixelEnvelope(360, decoY + 50, 6);
+    drawPixelHeart(542, decoY + 44, 92);
+    drawPixelGift(714, decoY + 30, 6);
+    drawPixelRing(908, decoY + 36, 6);
+    drawPixelFlower(1088, decoY + 30, 6);
+    drawPixelSparkIcon(1222, decoY + 58, 6);
+    [[468, decoY + 22, 32], [660, decoY + 122, 28], [1032, decoY + 124, 30], [1190, decoY + 20, 26]].forEach(([x, y, size]) => {
       drawPixelStar(x, y, size, "#ffffff");
     });
 
+    // Footer text
     exportCtx.textAlign = "center";
     exportCtx.textBaseline = "top";
     exportCtx.fillStyle = "#7a3e5f";
     exportCtx.font = `700 30px ${bodyFont}`;
-    exportCtx.fillText("Jena Lover • saved from the pixel heart book", 800, 1950);
+    exportCtx.fillText("Jena Lover • saved from the pixel heart book", centerX, Math.max(1950, decoY + decoRowH + 60));
 
     const link = document.createElement("a");
     link.download = `jena-love-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}.png`;
