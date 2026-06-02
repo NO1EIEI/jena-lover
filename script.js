@@ -277,6 +277,7 @@ function showScene(sceneName) {
     document.querySelector(`#${scene}`).classList.toggle("scene-active", scene === sceneName);
   });
   window.scrollTo({ top: 0, behavior: "instant" });
+  updateAmbientSound();
 }
 
 function detachAcceptButtonForFullscreen() {
@@ -625,6 +626,7 @@ function renderQuiz() {
     }
     lastQuizIndex = quizState.index;
   }
+  updateAmbientSound();
 }
 
 function calculateQuizResult() {
@@ -4358,6 +4360,125 @@ photoLightbox.addEventListener("click", (event) => {
 
 window.addEventListener("scroll", updateLandingProgress, { passive: true });
 window.addEventListener("resize", resizeCanvas);
+
+/* ==========================================================
+   Ambient Audio Manager (Theme-Specific Sounds)
+   ========================================================== */
+
+const AMBIENT_SOUNDS = {
+  bgm: "assets/boy-meets-girl.m4a"
+};
+
+let currentAudio = null;
+let currentSoundKey = null;
+let isMuted = false; // Start unmuted, plays on first scroll/click
+let hasInteractedForSound = false;
+
+function getSoundKeyForCurrentState() {
+  return "bgm";
+}
+
+function updateAmbientSound(forcePlay = false) {
+  if (isMuted) {
+    if (currentAudio) {
+      currentAudio.pause();
+    }
+    return;
+  }
+
+  const targetKey = getSoundKeyForCurrentState();
+  if (currentSoundKey === targetKey && currentAudio && !forcePlay) {
+    if (currentAudio.paused && hasInteractedForSound) {
+      currentAudio.play().catch(() => {});
+    }
+    return;
+  }
+
+  const targetSrc = AMBIENT_SOUNDS[targetKey] || AMBIENT_SOUNDS.landing;
+  currentSoundKey = targetKey;
+
+  // Smooth crossfade out of the old audio track
+  if (currentAudio) {
+    const oldAudio = currentAudio;
+    let fadeOutInterval = setInterval(() => {
+      if (oldAudio.volume > 0.05) {
+        oldAudio.volume -= 0.05;
+      } else {
+        clearInterval(fadeOutInterval);
+        oldAudio.pause();
+      }
+    }, 30);
+  }
+
+  // Set up the new audio track
+  currentAudio = new Audio(targetSrc);
+  currentAudio.loop = true;
+  currentAudio.volume = 0; // start silent for fade in
+
+  // Attempt to play immediately on load or when state changes
+  currentAudio.play().then(() => {
+    hasInteractedForSound = true;
+    removeInteractionListeners();
+    // Smooth fade in of the new track
+    let fadeInInterval = setInterval(() => {
+      if (currentAudio.volume < 0.45) {
+        currentAudio.volume += 0.05;
+      } else {
+        currentAudio.volume = 0.5;
+        clearInterval(fadeInInterval);
+      }
+    }, 50);
+  }).catch(e => {
+    console.log("Audio play deferred (waiting for interaction):", e);
+  });
+}
+
+// Sound toggle button click handler
+const soundToggle = document.getElementById("sound-toggle");
+if (soundToggle) {
+  const iconSoundOn = soundToggle.querySelector(".icon-sound-on");
+  const iconSoundMuted = soundToggle.querySelector(".icon-sound-muted");
+
+  soundToggle.addEventListener("click", () => {
+    isMuted = !isMuted;
+    hasInteractedForSound = true; // Click counts as user interaction
+    
+    if (isMuted) {
+      iconSoundOn.style.display = "none";
+      iconSoundMuted.style.display = "block";
+      if (currentAudio) {
+        currentAudio.pause();
+      }
+    } else {
+      iconSoundOn.style.display = "block";
+      iconSoundMuted.style.display = "none";
+      updateAmbientSound(true);
+    }
+  });
+}
+
+const interactionEvents = ["click", "touchstart", "mousedown", "pointerdown", "keydown"];
+
+// User interaction listeners for browser audio policies
+function initSoundOnInteraction() {
+  if (hasInteractedForSound) return;
+  hasInteractedForSound = true;
+  removeInteractionListeners();
+  updateAmbientSound(true);
+}
+
+function removeInteractionListeners() {
+  interactionEvents.forEach(event => {
+    document.removeEventListener(event, initSoundOnInteraction);
+  });
+}
+
+interactionEvents.forEach(event => {
+  document.addEventListener(event, initSoundOnInteraction, { passive: true });
+});
+
+// Initial call on page load
+updateAmbientSound();
 
 initThreeWorld();
 resizeCanvas();
