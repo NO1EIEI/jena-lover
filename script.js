@@ -896,14 +896,37 @@ async function downloadFinalImage(button = null) {
     button.textContent = "กำลังทำรูป...";
   }
 
+  let exportCanvas = null;
+  let measureCanvas = null;
+
   try {
     if (document.fonts) {
-      await document.fonts.ready;
+      try {
+        await document.fonts.ready;
+        // Explicitly load fonts to guarantee they're ready for offscreen/Safari canvas context
+        await Promise.all([
+          document.fonts.load("800 78px Mali"),
+          document.fonts.load("800 44px Mali"),
+          document.fonts.load("700 36px K2D"),
+          document.fonts.load("700 34px K2D"),
+          document.fonts.load("700 30px K2D")
+        ]);
+      } catch (e) {
+        console.warn("Fonts loading failed/timed out:", e);
+      }
     }
 
-    const exportCanvas = document.createElement("canvas");
+    exportCanvas = document.createElement("canvas");
     exportCanvas.width = 1600;
     exportCanvas.height = 2200;
+    
+    // Hide and append canvas to DOM to bind loaded fonts correctly in iOS Safari
+    exportCanvas.style.position = "absolute";
+    exportCanvas.style.left = "-9999px";
+    exportCanvas.style.top = "-9999px";
+    exportCanvas.style.visibility = "hidden";
+    document.body.appendChild(exportCanvas);
+
     const exportCtx = exportCanvas.getContext("2d");
     const titleText = document.querySelector(".final-popup h1")?.textContent?.trim() || "เราเป็นแฟนกันแล้วนะ";
     const displayedFinalTime = finalDate.textContent?.trim() || "";
@@ -912,8 +935,8 @@ async function downloadFinalImage(button = null) {
       : formatCoupleSince(new Date());
     const coupleNamesText = "เจน่า กับ น้องอุ้มอิ้ม (˶˃ ᵕ ˂˶)";
     const bodyText = "ขอบคุณที่เจน่ามาเป็นส่วนหนึ่งของกันและกันนะ คุณแฟนคนแรกของเค้า เขาสัญญาจะดูแลเจน่าให้ดีที่สุดเหมือนวันแรกที่เค้าตกหลุมรักเจน่าเลยย";
-    const titleFont = '"Mali", "K2D", "Chakra Petch", "Segoe UI", sans-serif';
-    const bodyFont = '"K2D", "Mali", "Chakra Petch", "Segoe UI", sans-serif';
+    const titleFont = "Mali, K2D, 'Chakra Petch', sans-serif";
+    const bodyFont = "K2D, Mali, 'Chakra Petch', sans-serif";
 
     const drawRoundedRect = (x, y, width, height, radius, fill, stroke = null, lineWidth = 0) => {
       exportCtx.beginPath();
@@ -939,9 +962,6 @@ async function downloadFinalImage(button = null) {
     };
 
     const drawCenteredText = (text, x, y, maxWidth, lineHeight, maxLines = 3) => {
-      // Capture current font & fillStyle before save so we can re-apply them
-      const currentFont = exportCtx.font;
-      const currentFill = exportCtx.fillStyle;
 
       let words = [];
       if (typeof Intl !== "undefined" && Intl.Segmenter) {
@@ -991,8 +1011,6 @@ async function downloadFinalImage(button = null) {
       exportCtx.save();
       exportCtx.textAlign = "center";
       exportCtx.textBaseline = "top";
-      exportCtx.font = currentFont;
-      exportCtx.fillStyle = currentFill;
 
       lines.slice(0, maxLines).forEach((textLine, index) => {
         exportCtx.fillText(textLine, x, y + index * lineHeight);
@@ -1169,9 +1187,17 @@ async function downloadFinalImage(button = null) {
 
     // ---- PASS 1: Measure text layout to determine card height ----
     // We use a hidden measurement canvas with the same fonts
-    const measureCanvas = document.createElement("canvas");
+    measureCanvas = document.createElement("canvas");
     measureCanvas.width = 1600;
     measureCanvas.height = 2200;
+
+    // Hide and append canvas to DOM to bind loaded fonts correctly in iOS Safari
+    measureCanvas.style.position = "absolute";
+    measureCanvas.style.left = "-9999px";
+    measureCanvas.style.top = "-9999px";
+    measureCanvas.style.visibility = "hidden";
+    document.body.appendChild(measureCanvas);
+
     const measureCtx = measureCanvas.getContext("2d");
 
     const measureText = (text, font, maxWidth, lineHeight, maxLines = 3) => {
@@ -1344,6 +1370,12 @@ async function downloadFinalImage(button = null) {
     link.remove();
 
   } finally {
+    if (exportCanvas && exportCanvas.parentNode) {
+      exportCanvas.parentNode.removeChild(exportCanvas);
+    }
+    if (measureCanvas && measureCanvas.parentNode) {
+      measureCanvas.parentNode.removeChild(measureCanvas);
+    }
     if (button) {
       button.disabled = false;
       button.textContent = originalLabel;
@@ -4421,10 +4453,10 @@ function updateAmbientSound(forcePlay = false) {
     removeInteractionListeners();
     // Smooth fade in of the new track
     let fadeInInterval = setInterval(() => {
-      if (currentAudio.volume < 0.45) {
+      if (currentAudio.volume < 0.25) {
         currentAudio.volume += 0.05;
       } else {
-        currentAudio.volume = 0.5;
+        currentAudio.volume = 0.3;
         clearInterval(fadeInInterval);
       }
     }, 50);
