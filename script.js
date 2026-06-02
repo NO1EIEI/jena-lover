@@ -74,7 +74,7 @@ const quizQuestions = [
   {
     season: "spring",
     label: "ใบไม้ผลิ",
-    question: "วันนี้สนุกมั้ย",
+    question: "วันนี้สนุกมั้ยย",
     options: [
       { text: "สนุกกกก", score: 20 },
       { text: "อืมม.. ไม่รู้สิ นิด ๆ ละมั้ง", score: 10 },
@@ -84,7 +84,7 @@ const quizQuestions = [
   {
     season: "summer",
     label: "หน้าร้อน",
-    question: "เจน่าอยู่กับเค้าแล้วมีความสุขมั้ย",
+    question: "เจน่าอยู่กับเค้าแล้วมีความสุขมั้ยย",
     options: [
       { text: "มากกกเลยล่ะ", score: 20 },
       { text: "ก็นะ", score: 10 },
@@ -116,7 +116,7 @@ const quizQuestions = [
   {
     season: "autumn",
     label: "ใบไม้ร่วง",
-    question: "เจน่ารู้สึกสบายใจที่จะใส่ชุดโทรมๆ หน้าสด หรือทำตัวบ้า ๆ บอ ๆ กับเค้า 100% หรือยัง?",
+    question: "เจน่ารู้สึกสบายใจกับเค้า 100% หรือยัง?",
     options: [
       { text: "สบายใจหมดเลยย", score: 20 },
       { text: "ค่อนข้างมากเลยล่ะ", score: 15 },
@@ -127,11 +127,11 @@ const quizQuestions = [
   {
     season: "stars",
     label: "ท้องฟ้าดาว",
-    question: "เจน่าอยากมาเที่ยวกับเค้าแบบนี้อีกมั้ยย",
+    question: "เจน่าอยากให้เราอยู่ด้วยกันและผูกพันกันแบบนี้ไปนานๆ มั้ยย",
     options: [
       { text: "อยากกสุดสุดด", score: 20 },
       { text: "อาจจะยัง", score: 0 },
-      { text: "แล้วแต่ใจฉัน ฮึ", score: 10 },
+      { text: "ม่ายรุ ฮึ", score: 10 },
     ],
   },
 ];
@@ -1000,249 +1000,249 @@ async function downloadFinalImage(button = null) {
       return y + totalLines * lineHeight;
     };
 
-  const drawPixelHeart = (x, y, size) => {
-    const p = size / 8;
-    exportCtx.fillStyle = "#ff5aa1";
-    exportCtx.fillRect(x + p, y + p, p * 2, p);
-    exportCtx.fillRect(x + p * 5, y + p, p * 2, p);
-    exportCtx.fillRect(x, y + p * 2, p * 8, p * 2);
-    exportCtx.fillRect(x + p, y + p * 4, p * 6, p);
-    exportCtx.fillRect(x + p * 2, y + p * 5, p * 4, p);
-    exportCtx.fillRect(x + p * 3, y + p * 6, p * 2, p);
-    exportCtx.fillStyle = "#ffa8c8";
-    exportCtx.fillRect(x + p, y + p * 2, p * 6, p * 2);
-    exportCtx.fillRect(x + p * 2, y + p * 4, p * 4, p);
-    exportCtx.fillRect(x + p * 3, y + p * 5, p * 2, p);
-    exportCtx.fillStyle = "#ffffff";
-    exportCtx.fillRect(x + p * 5, y + p * 2, p, p);
-  };
-
-  const drawPixelStar = (x, y, size, color = "#ffffff") => {
-    const p = size / 5;
-    exportCtx.fillStyle = color;
-    exportCtx.fillRect(x + p * 2, y, p, p * 5);
-    exportCtx.fillRect(x, y + p * 2, p * 5, p);
-  };
-
-  const drawBgEmoji = (emoji, x, y, size, alpha = 0.2, rotate = 0) => {
-    exportCtx.save();
-    exportCtx.globalAlpha = alpha;
-    exportCtx.translate(x, y);
-    exportCtx.rotate(rotate);
-    exportCtx.textAlign = "center";
-    exportCtx.textBaseline = "middle";
-    exportCtx.font = `${size}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
-    exportCtx.fillText(emoji, 0, 0);
-    exportCtx.restore();
-  };
-
-  const drawPixelEnvelope = (x, y, scale = 5) => {
-    const px = (dx, dy, w, h, color) => {
-      exportCtx.fillStyle = color;
-      exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+    const drawPixelHeart = (x, y, size) => {
+      const p = size / 8;
+      exportCtx.fillStyle = "#ff5aa1";
+      exportCtx.fillRect(x + p, y + p, p * 2, p);
+      exportCtx.fillRect(x + p * 5, y + p, p * 2, p);
+      exportCtx.fillRect(x, y + p * 2, p * 8, p * 2);
+      exportCtx.fillRect(x + p, y + p * 4, p * 6, p);
+      exportCtx.fillRect(x + p * 2, y + p * 5, p * 4, p);
+      exportCtx.fillRect(x + p * 3, y + p * 6, p * 2, p);
+      exportCtx.fillStyle = "#ffa8c8";
+      exportCtx.fillRect(x + p, y + p * 2, p * 6, p * 2);
+      exportCtx.fillRect(x + p * 2, y + p * 4, p * 4, p);
+      exportCtx.fillRect(x + p * 3, y + p * 5, p * 2, p);
+      exportCtx.fillStyle = "#ffffff";
+      exportCtx.fillRect(x + p * 5, y + p * 2, p, p);
     };
-    px(1, 0, 14, 1, "#5f2d45");
-    px(0, 1, 1, 10, "#5f2d45");
-    px(15, 1, 1, 10, "#5f2d45");
-    px(1, 11, 14, 1, "#5f2d45");
-    px(1, 1, 14, 10, "#fff8df");
-    px(2, 2, 12, 2, "#ffd7e7");
-    px(2, 3, 2, 1, "#b75084");
-    px(12, 3, 2, 1, "#b75084");
-    px(4, 4, 1, 1, "#b75084");
-    px(11, 4, 1, 1, "#b75084");
-    px(5, 5, 1, 1, "#b75084");
-    px(10, 5, 1, 1, "#b75084");
-    px(6, 6, 4, 1, "#b75084");
-    px(7, 4, 2, 1, "#ff4d86");
-    px(6, 5, 4, 2, "#ff4d86");
-    px(7, 7, 2, 1, "#ff4d86");
-    px(12, 2, 1, 1, "#ffffff");
-  };
 
-  const drawPixelGift = (x, y, scale = 5) => {
-    const px = (dx, dy, w, h, color) => {
+    const drawPixelStar = (x, y, size, color = "#ffffff") => {
+      const p = size / 5;
       exportCtx.fillStyle = color;
-      exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+      exportCtx.fillRect(x + p * 2, y, p, p * 5);
+      exportCtx.fillRect(x, y + p * 2, p * 5, p);
     };
-    px(4, 0, 3, 2, "#ff5aa1");
-    px(9, 0, 3, 2, "#ff5aa1");
-    px(5, 2, 6, 2, "#ff5aa1");
-    px(1, 4, 14, 3, "#5f2d45");
-    px(2, 5, 12, 2, "#ff8cc1");
-    px(2, 7, 12, 9, "#ff6fb0");
-    px(0, 6, 1, 10, "#5f2d45");
-    px(15, 6, 1, 10, "#5f2d45");
-    px(1, 16, 14, 1, "#5f2d45");
-    px(7, 4, 2, 13, "#fff1a8");
-    px(2, 8, 12, 2, "#b75084");
-    px(11, 7, 2, 2, "#ffa8c8");
-    px(3, 8, 2, 1, "#ffcfe0");
-  };
 
-  const drawPixelRing = (x, y, scale = 5) => {
-    const px = (dx, dy, w, h, color) => {
-      exportCtx.fillStyle = color;
-      exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+    const drawBgEmoji = (emoji, x, y, size, alpha = 0.2, rotate = 0) => {
+      exportCtx.save();
+      exportCtx.globalAlpha = alpha;
+      exportCtx.translate(x, y);
+      exportCtx.rotate(rotate);
+      exportCtx.textAlign = "center";
+      exportCtx.textBaseline = "middle";
+      exportCtx.font = `${size}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+      exportCtx.fillText(emoji, 0, 0);
+      exportCtx.restore();
     };
-    px(6, 0, 5, 1, "#ff8cc1");
-    px(5, 1, 7, 2, "#ffa8c8");
-    px(4, 3, 9, 1, "#5f2d45");
-    px(6, 4, 5, 1, "#fff8df");
-    px(4, 5, 2, 2, "#ffd35e");
-    px(11, 5, 2, 2, "#ffd35e");
-    px(3, 7, 2, 6, "#d89935");
-    px(12, 7, 2, 6, "#d89935");
-    px(5, 13, 7, 2, "#d89935");
-    px(6, 7, 5, 6, "#fff8df");
-    px(8, 1, 2, 1, "#ffffff");
-  };
 
-  const drawPixelFlower = (x, y, scale = 5) => {
-    const px = (dx, dy, w, h, color) => {
-      exportCtx.fillStyle = color;
-      exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+    const drawPixelEnvelope = (x, y, scale = 5) => {
+      const px = (dx, dy, w, h, color) => {
+        exportCtx.fillStyle = color;
+        exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+      };
+      px(1, 0, 14, 1, "#5f2d45");
+      px(0, 1, 1, 10, "#5f2d45");
+      px(15, 1, 1, 10, "#5f2d45");
+      px(1, 11, 14, 1, "#5f2d45");
+      px(1, 1, 14, 10, "#fff8df");
+      px(2, 2, 12, 2, "#ffd7e7");
+      px(2, 3, 2, 1, "#b75084");
+      px(12, 3, 2, 1, "#b75084");
+      px(4, 4, 1, 1, "#b75084");
+      px(11, 4, 1, 1, "#b75084");
+      px(5, 5, 1, 1, "#b75084");
+      px(10, 5, 1, 1, "#b75084");
+      px(6, 6, 4, 1, "#b75084");
+      px(7, 4, 2, 1, "#ff4d86");
+      px(6, 5, 4, 2, "#ff4d86");
+      px(7, 7, 2, 1, "#ff4d86");
+      px(12, 2, 1, 1, "#ffffff");
     };
-    px(7, 7, 2, 10, "#4b9a62");
-    px(5, 10, 2, 2, "#76c979");
-    px(9, 12, 3, 2, "#76c979");
-    px(7, 1, 2, 2, "#ff5aa1");
-    px(4, 3, 3, 3, "#ff8cc1");
-    px(9, 3, 3, 3, "#ff8cc1");
-    px(6, 5, 4, 4, "#ff5aa1");
-    px(7, 6, 2, 2, "#fff1a8");
-    px(10, 4, 1, 1, "#ffd7e7");
-  };
 
-  const drawPixelSparkIcon = (x, y, scale = 5) => {
-    const px = (dx, dy, w, h, color) => {
-      exportCtx.fillStyle = color;
-      exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+    const drawPixelGift = (x, y, scale = 5) => {
+      const px = (dx, dy, w, h, color) => {
+        exportCtx.fillStyle = color;
+        exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+      };
+      px(4, 0, 3, 2, "#ff5aa1");
+      px(9, 0, 3, 2, "#ff5aa1");
+      px(5, 2, 6, 2, "#ff5aa1");
+      px(1, 4, 14, 3, "#5f2d45");
+      px(2, 5, 12, 2, "#ff8cc1");
+      px(2, 7, 12, 9, "#ff6fb0");
+      px(0, 6, 1, 10, "#5f2d45");
+      px(15, 6, 1, 10, "#5f2d45");
+      px(1, 16, 14, 1, "#5f2d45");
+      px(7, 4, 2, 13, "#fff1a8");
+      px(2, 8, 12, 2, "#b75084");
+      px(11, 7, 2, 2, "#ffa8c8");
+      px(3, 8, 2, 1, "#ffcfe0");
     };
-    px(6, 0, 2, 5, "#fff8df");
-    px(5, 5, 4, 2, "#fff8df");
-    px(6, 7, 2, 5, "#fff8df");
-    px(1, 5, 4, 2, "#ff8cc1");
-    px(9, 5, 4, 2, "#ff8cc1");
-    px(7, 4, 1, 1, "#ffffff");
-  };
 
-  exportCtx.imageSmoothingEnabled = false;
-  const bg = exportCtx.createLinearGradient(0, 0, 0, 2200);
-  bg.addColorStop(0, "#fff9fd");
-  bg.addColorStop(0.46, "#ffc9de");
-  bg.addColorStop(0.78, "#f08ac1");
-  bg.addColorStop(1, "#a596d2");
-  exportCtx.fillStyle = bg;
-  exportCtx.fillRect(0, 0, 1600, 2200);
+    const drawPixelRing = (x, y, scale = 5) => {
+      const px = (dx, dy, w, h, color) => {
+        exportCtx.fillStyle = color;
+        exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+      };
+      px(6, 0, 5, 1, "#ff8cc1");
+      px(5, 1, 7, 2, "#ffa8c8");
+      px(4, 3, 9, 1, "#5f2d45");
+      px(6, 4, 5, 1, "#fff8df");
+      px(4, 5, 2, 2, "#ffd35e");
+      px(11, 5, 2, 2, "#ffd35e");
+      px(3, 7, 2, 6, "#d89935");
+      px(12, 7, 2, 6, "#d89935");
+      px(5, 13, 7, 2, "#d89935");
+      px(6, 7, 5, 6, "#fff8df");
+      px(8, 1, 2, 1, "#ffffff");
+    };
 
-  [[120, 90, 132], [512, 48, 120], [1020, 110, 112], [1370, 42, 124], [260, 520, 108], [740, 430, 126], [1220, 520, 116], [170, 1040, 110], [555, 1200, 108], [1050, 1140, 128], [1340, 1380, 104], [310, 1660, 118], [870, 1760, 122]].forEach(([x, y, size]) => {
-    drawPixelHeart(x, y, size);
-  });
+    const drawPixelFlower = (x, y, scale = 5) => {
+      const px = (dx, dy, w, h, color) => {
+        exportCtx.fillStyle = color;
+        exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+      };
+      px(7, 7, 2, 10, "#4b9a62");
+      px(5, 10, 2, 2, "#76c979");
+      px(9, 12, 3, 2, "#76c979");
+      px(7, 1, 2, 2, "#ff5aa1");
+      px(4, 3, 3, 3, "#ff8cc1");
+      px(9, 3, 3, 3, "#ff8cc1");
+      px(6, 5, 4, 4, "#ff5aa1");
+      px(7, 6, 2, 2, "#fff1a8");
+      px(10, 4, 1, 1, "#ffd7e7");
+    };
 
-  [[190, 240, 48], [1260, 265, 64], [1410, 780, 54], [98, 825, 58], [715, 1540, 46], [1180, 1810, 62]].forEach(([x, y, size]) => {
-    drawPixelStar(x, y, size);
-  });
+    const drawPixelSparkIcon = (x, y, scale = 5) => {
+      const px = (dx, dy, w, h, color) => {
+        exportCtx.fillStyle = color;
+        exportCtx.fillRect(x + dx * scale, y + dy * scale, w * scale, h * scale);
+      };
+      px(6, 0, 2, 5, "#fff8df");
+      px(5, 5, 4, 2, "#fff8df");
+      px(6, 7, 2, 5, "#fff8df");
+      px(1, 5, 4, 2, "#ff8cc1");
+      px(9, 5, 4, 2, "#ff8cc1");
+      px(7, 4, 1, 1, "#ffffff");
+    };
 
-  [
-    ["\u2661", 430, 188, 112, 0.2, -0.18],
-    ["\u2726", 1188, 206, 92, 0.3, 0.12],
-    ["\u{1F48C}", 1460, 392, 86, 0.18, 0.22],
-    ["\u{1F380}", 118, 614, 82, 0.18, -0.2],
-    ["\u273F", 1386, 1000, 90, 0.2, 0.16],
-    ["\u2661", 86, 1298, 118, 0.22, 0.08],
-    ["\u{1F497}", 1480, 1530, 96, 0.18, -0.14],
-    ["\u2727", 220, 1884, 76, 0.28, 0.05],
-    ["\u{1F48C}", 1290, 1900, 74, 0.16, 0.22],
-    ["\u2661", 804, 2050, 88, 0.18, -0.08],
-  ].forEach(([emoji, x, y, size, alpha, rotate]) => {
-    drawBgEmoji(emoji, x, y, size, alpha, rotate);
-  });
-
-  exportCtx.fillStyle = "rgba(108, 45, 79, 0.38)";
-  exportCtx.fillRect(192, 332, 1288, 1540);
-  exportCtx.fillStyle = "#6c2d4f";
-  exportCtx.fillRect(156, 294, 1288, 1540);
-  exportCtx.fillStyle = "#fff8df";
-  exportCtx.fillRect(190, 328, 1220, 1470);
-  exportCtx.fillStyle = "#ffd997";
-  exportCtx.fillRect(224, 362, 1152, 60);
-  exportCtx.fillStyle = "#ffe6b8";
-  exportCtx.fillRect(224, 462, 1152, 1160);
-  exportCtx.fillStyle = "rgba(221, 135, 91, 0.12)";
-  exportCtx.fillRect(224, 1425, 1152, 197);
-  exportCtx.strokeStyle = "#6c2d4f";
-  exportCtx.lineWidth = 18;
-  exportCtx.strokeRect(190, 328, 1220, 1470);
-  exportCtx.strokeStyle = "#ffd997";
-  exportCtx.lineWidth = 10;
-  exportCtx.strokeRect(224, 362, 1152, 1400);
-
-  exportCtx.fillStyle = "#ff8cc1";
-  [0, 1, 2, 3].forEach((i) => {
-    exportCtx.fillRect(262 + i * 260, 384, 178, 28);
-  });
-
-  const sticker = exportStickerImage.complete && exportStickerImage.naturalWidth > 0
-    ? exportStickerImage
-    : null;
-  if (sticker) {
-    exportCtx.save();
-    exportCtx.imageSmoothingEnabled = true;
-    exportCtx.translate(336, 278);
-    exportCtx.rotate(-0.12);
-    exportCtx.drawImage(sticker, -170, -184, 340, 520);
-    exportCtx.restore();
     exportCtx.imageSmoothingEnabled = false;
-  }
+    const bg = exportCtx.createLinearGradient(0, 0, 0, 2200);
+    bg.addColorStop(0, "#fff9fd");
+    bg.addColorStop(0.46, "#ffc9de");
+    bg.addColorStop(0.78, "#f08ac1");
+    bg.addColorStop(1, "#a596d2");
+    exportCtx.fillStyle = bg;
+    exportCtx.fillRect(0, 0, 1600, 2200);
 
-  exportCtx.textAlign = "center";
-  exportCtx.textBaseline = "top";
-  exportCtx.fillStyle = "#b75084";
-  exportCtx.font = `700 34px ${bodyFont}`;
-  exportCtx.fillText("Final Page", 800, 510);
+    [[120, 90, 132], [512, 48, 120], [1020, 110, 112], [1370, 42, 124], [260, 520, 108], [740, 430, 126], [1220, 520, 116], [170, 1040, 110], [555, 1200, 108], [1050, 1140, 128], [1340, 1380, 104], [310, 1660, 118], [870, 1760, 122]].forEach(([x, y, size]) => {
+      drawPixelHeart(x, y, size);
+    });
 
-  exportCtx.fillStyle = "#62364b";
-  exportCtx.font = `800 78px ${titleFont}`;
-  drawCenteredText(titleText, 800, 580, 1040, 94, 3);
+    [[190, 240, 48], [1260, 265, 64], [1410, 780, 54], [98, 825, 58], [715, 1540, 46], [1180, 1810, 62]].forEach(([x, y, size]) => {
+      drawPixelStar(x, y, size);
+    });
 
-  drawRoundedRect(300, 858, 1000, 104, 0, "#fff8df", "#b75084", 12);
-  exportCtx.fillStyle = "#7a3e5f";
-  exportCtx.font = `700 36px ${bodyFont}`;
-  drawCenteredText(finalTimeText, 800, 885, 900, 44, 2);
+    [
+      ["\u2661", 430, 188, 112, 0.2, -0.18],
+      ["\u2726", 1188, 206, 92, 0.3, 0.12],
+      ["\u{1F48C}", 1460, 392, 86, 0.18, 0.22],
+      ["\u{1F380}", 118, 614, 82, 0.18, -0.2],
+      ["\u273F", 1386, 1000, 90, 0.2, 0.16],
+      ["\u2661", 86, 1298, 118, 0.22, 0.08],
+      ["\u{1F497}", 1480, 1530, 96, 0.18, -0.14],
+      ["\u2727", 220, 1884, 76, 0.28, 0.05],
+      ["\u{1F48C}", 1290, 1900, 74, 0.16, 0.22],
+      ["\u2661", 804, 2050, 88, 0.18, -0.08],
+    ].forEach(([emoji, x, y, size, alpha, rotate]) => {
+      drawBgEmoji(emoji, x, y, size, alpha, rotate);
+    });
 
-  exportCtx.fillStyle = "#744555";
-  exportCtx.font = `700 36px ${bodyFont}`;
-  drawCenteredText(bodyText, 800, 1020, 950, 56, 7);
+    exportCtx.fillStyle = "rgba(108, 45, 79, 0.38)";
+    exportCtx.fillRect(192, 332, 1288, 1540);
+    exportCtx.fillStyle = "#6c2d4f";
+    exportCtx.fillRect(156, 294, 1288, 1540);
+    exportCtx.fillStyle = "#fff8df";
+    exportCtx.fillRect(190, 328, 1220, 1470);
+    exportCtx.fillStyle = "#ffd997";
+    exportCtx.fillRect(224, 362, 1152, 60);
+    exportCtx.fillStyle = "#ffe6b8";
+    exportCtx.fillRect(224, 462, 1152, 1160);
+    exportCtx.fillStyle = "rgba(221, 135, 91, 0.12)";
+    exportCtx.fillRect(224, 1425, 1152, 197);
+    exportCtx.strokeStyle = "#6c2d4f";
+    exportCtx.lineWidth = 18;
+    exportCtx.strokeRect(190, 328, 1220, 1470);
+    exportCtx.strokeStyle = "#ffd997";
+    exportCtx.lineWidth = 10;
+    exportCtx.strokeRect(224, 362, 1152, 1400);
 
-  drawRoundedRect(350, 1418, 900, 126, 0, "#fff8df", "#b75084", 12);
-  exportCtx.fillStyle = "#8f2b66";
-  exportCtx.font = `800 44px ${titleFont}`;
-  drawCenteredText(coupleNamesText, 800, 1450, 820, 52, 2);
+    exportCtx.fillStyle = "#ff8cc1";
+    [0, 1, 2, 3].forEach((i) => {
+      exportCtx.fillRect(262 + i * 260, 384, 178, 28);
+    });
 
-  drawRoundedRect(278, 1588, 1044, 170, 0, "rgba(255, 248, 223, 0.62)", "#ffd997", 8);
-  drawPixelEnvelope(360, 1638, 6);
-  drawPixelHeart(542, 1632, 92);
-  drawPixelGift(714, 1618, 6);
-  drawPixelRing(908, 1624, 6);
-  drawPixelFlower(1088, 1618, 6);
-  drawPixelSparkIcon(1222, 1646, 6);
-  [[468, 1610, 32], [660, 1710, 28], [1032, 1712, 30], [1190, 1608, 26]].forEach(([x, y, size]) => {
-    drawPixelStar(x, y, size, "#ffffff");
-  });
+    const sticker = exportStickerImage.complete && exportStickerImage.naturalWidth > 0
+      ? exportStickerImage
+      : null;
+    if (sticker) {
+      exportCtx.save();
+      exportCtx.imageSmoothingEnabled = true;
+      exportCtx.translate(336, 278);
+      exportCtx.rotate(-0.12);
+      exportCtx.drawImage(sticker, -170, -184, 340, 520);
+      exportCtx.restore();
+      exportCtx.imageSmoothingEnabled = false;
+    }
 
-  exportCtx.textAlign = "center";
-  exportCtx.textBaseline = "top";
-  exportCtx.fillStyle = "#7a3e5f";
-  exportCtx.font = `700 30px ${bodyFont}`;
-  exportCtx.fillText("Jena Lover • saved from the pixel heart book", 800, 1950);
+    exportCtx.textAlign = "center";
+    exportCtx.textBaseline = "top";
+    exportCtx.fillStyle = "#b75084";
+    exportCtx.font = `700 34px ${bodyFont}`;
+    exportCtx.fillText("Final Page", 800, 510);
 
-  const link = document.createElement("a");
-  link.download = `jena-love-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}.png`;
-  link.href = exportCanvas.toDataURL("image/png");
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+    exportCtx.fillStyle = "#62364b";
+    exportCtx.font = `800 78px ${titleFont}`;
+    drawCenteredText(titleText, 800, 580, 1040, 94, 3);
+
+    drawRoundedRect(300, 858, 1000, 104, 0, "#fff8df", "#b75084", 12);
+    exportCtx.fillStyle = "#7a3e5f";
+    exportCtx.font = `700 36px ${bodyFont}`;
+    drawCenteredText(finalTimeText, 800, 885, 900, 44, 2);
+
+    exportCtx.fillStyle = "#744555";
+    exportCtx.font = `700 36px ${bodyFont}`;
+    drawCenteredText(bodyText, 800, 1020, 950, 56, 7);
+
+    drawRoundedRect(350, 1418, 900, 126, 0, "#fff8df", "#b75084", 12);
+    exportCtx.fillStyle = "#8f2b66";
+    exportCtx.font = `800 44px ${titleFont}`;
+    drawCenteredText(coupleNamesText, 800, 1450, 820, 52, 2);
+
+    drawRoundedRect(278, 1588, 1044, 170, 0, "rgba(255, 248, 223, 0.62)", "#ffd997", 8);
+    drawPixelEnvelope(360, 1638, 6);
+    drawPixelHeart(542, 1632, 92);
+    drawPixelGift(714, 1618, 6);
+    drawPixelRing(908, 1624, 6);
+    drawPixelFlower(1088, 1618, 6);
+    drawPixelSparkIcon(1222, 1646, 6);
+    [[468, 1610, 32], [660, 1710, 28], [1032, 1712, 30], [1190, 1608, 26]].forEach(([x, y, size]) => {
+      drawPixelStar(x, y, size, "#ffffff");
+    });
+
+    exportCtx.textAlign = "center";
+    exportCtx.textBaseline = "top";
+    exportCtx.fillStyle = "#7a3e5f";
+    exportCtx.font = `700 30px ${bodyFont}`;
+    exportCtx.fillText("Jena Lover • saved from the pixel heart book", 800, 1950);
+
+    const link = document.createElement("a");
+    link.download = `jena-love-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}.png`;
+    link.href = exportCanvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
   } finally {
     if (button) {
@@ -1303,7 +1303,7 @@ function seedTwinkleStars() {
   for (let i = 0; i < count; i += 1) {
     const size = 0.8 + Math.random() * 1.8;
     // Parallax scroll factor: larger stars scroll faster (closer), smaller stars scroll slower (further away)
-    const scrollFactor = 0.25 + (size - 0.8) / 1.8 * 1.55; 
+    const scrollFactor = 0.25 + (size - 0.8) / 1.8 * 1.55;
     twinkleStars.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight * 0.75,
